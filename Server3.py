@@ -84,7 +84,13 @@ def default(message):
 
 #We process client request here. The requested resource in the URL is mapped to a service function which generates the HTTP reponse 
 #that is eventually returned to the client. 
-def process(connectionSocket) :	
+def stock(resource):
+	header, body = getFile(resource.html)
+	return header, body
+
+
+
+def process(connectionSocket) :
 	# Receives the request message from the client
 	message = connectionSocket.recv(1024).decode()
 
@@ -102,9 +108,10 @@ def process(connectionSocket) :
 			responseHeader, responseBody = default(message)
 		elif resource == "welcome":
 			responseHeader,responseBody = welcome(message)
+		elif resource == "stock":
+			responseHeader,responseBody = stock(message)
 		else:
 			responseHeader,responseBody = getFile(resource)
-
 
 	# Send the HTTP response header line to the connection socket
 	connectionSocket.send(responseHeader)
