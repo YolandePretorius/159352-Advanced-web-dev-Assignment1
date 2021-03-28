@@ -16,9 +16,10 @@
 
 
 from socket import *
-import pycurl
 import _thread
+import pycurl
 from io import BytesIO
+
 
 serverSocket = socket(AF_INET, SOCK_STREAM)
 
@@ -76,6 +77,47 @@ def welcome(message):
 
 	return header, body
 
+
+
+##location service function uses google API to return XML data about the requested location
+def location(message):
+
+	# So this is a web server which has just received an HTTP request from client. 
+	#In order to service this request we need to connect to Google Map API server and pass on the request for location data
+	#To do this we need another socket. Since we are requesting for data from Google server, we will be the client.
+	#Google server requires secure HTTP connection (TLS/SSL) so we could create a client socket with ssl wrapper.
+	#However pycurl provides a convenient way of communcating with an HTTPS server.
+
+	#get the location name (e.g. auckland) from the client's HTTP GET request (e.g. /loc=auckland)
+	resource = message.split()[1][1:].strip('loc=')
+
+	#This is buffer to hold response from google map API server
+	response_buffer = BytesIO()
+
+	curl = pycurl.Curl()
+
+	#Set the curl options which specify the Google API server, the parameters to be passed to the API,
+	# and buffer to hold the response
+	curl.setopt(curl.SSL_VERIFYPEER, False)
+	curl.setopt(curl.URL, 'https://maps.googleapis.com/maps/api/geocode/xml?key=AIzaSyASAX7LnyXwY1pxZPYgIZY-baZqb1pIGnY&address="' + resource + '"')
+	
+
+	curl.setopt(curl.WRITEFUNCTION, response_buffer.write)
+
+	curl.perform()
+	curl.close()
+
+	#create HTTP response just by simply relaying back Google server's response
+	body = response_buffer.getvalue().decode('UTF-8')
+
+	#It may seem redundant to decode and then encode. However if you want to be able to parse the XML data, it has to be decoded first.
+	body = body.encode()
+	header = "HTTP/1.1 200 OK\r\n\r\n".encode()
+
+
+	return header, body
+
+
 #default service function
 def default(message):
 
@@ -86,44 +128,7 @@ def default(message):
 
 #We process client request here. The requested resource in the URL is mapped to a service function which generates the HTTP reponse 
 #that is eventually returned to the client. 
-def stock(resource):
-	header, body = getFile(resource.html)
-	return header, body
-
-def getSymbol(resource):
-
-	symbol = 'A'
-
-	response_buffer = BytesIO()
-
-	curl = pycurl.Curl()
-	curl.setopt(curl.SSL_VERIFYPEER, False)
-	curl.setopt(curl.URL, 'https://cloud.iexapis.com/stable/ref-data/symbols?token=pk_aff9e28203a3436cb258c9f4ec9f5dbb')
-
-	curl.setopt(curl.WRITEFUNCTION, response_buffer.write)
-
-	print("here is your responce: ",)
-
-	curl.perform()
-	curl.close()
-
-	body = response_buffer.getvalue().decode('UTF-8')
-	body2 = body.encode()
-	header = "HTTP/1.1 200 OK\r\n\r\n".encode()
-	return header, body
-
-def portfolio(resource):
-
-	FileName = resource + ".html"
-	print("")
-	getSymbol("A")
-	#println("Inside portfolio")
-	header, body = getFile(FileName)
-	return header, body
-
-
-
-def process(connectionSocket) :
+def process(connectionSocket) :	
 	# Receives the request message from the client
 	message = connectionSocket.recv(1024).decode()
 
@@ -136,17 +141,17 @@ def process(connectionSocket) :
 		# a character '/', we read the path from the second character
 		resource = message.split()[1][1:]
 
+
 		#map requested resource (contained in the URL) to specific function which generates HTTP response 
 		if resource == "":
 			responseHeader, responseBody = default(message)
 		elif resource == "welcome":
 			responseHeader,responseBody = welcome(message)
-		elif resource == "stock":
-			responseHeader,responseBody = stock(message)
-		elif resource == "portfolio":
-			responseHeader,responseBody = portfolio(resource)
+		elif "loc=" in resource:
+			responseHeader,responseBody = location(message)
 		else:
 			responseHeader,responseBody = getFile(resource)
+
 
 	# Send the HTTP response header line to the connection socket
 	connectionSocket.send(responseHeader)
