@@ -2,9 +2,49 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>User Portfolio</title>
+    <script  type="text/javascript" src="portfolio.js"></script>
+    <title>Portfolio</title>
+
+    <style>
+        th, td, p, input, h3 {
+            font:15px 'Segoe UI';
+        }
+        table, th, td {
+            border: solid 1px #ddd;
+            border-collapse: collapse;
+            padding: 2px 3px;
+            text-align: center;
+        }
+        th {
+            font-weight:bold;
+        }
+    </style>
 </head>
 <body>
-<p> Welcome to your portfolio</p>
+
+<h3>Welcome to your portfolio</h3>
+
+    <input type='button' onclick='getData()'
+    	value='View stock data' />
+
+    <p id='showData'></p>
+
+    <p id='msg'></p>
+
+<form method="post">
+
+  <label for="stock">Stock symbol: </label><br>
+  <input type="text" id="stock" name="StockSym" value="Stock"><br>
+
+  <label for="quantity">Quantity:</label><br>
+  <input type="text" id="quantity" name="quantity" value="Quantity"><br>
+
+  <label for="price">Price: </label><br>
+  <input type="text" id="price" name="price" value="Price"><br><br>
+
+  <input type="button" value="reset" onclick='setData()'>
+  <input type="button" value="update" onclick='setData()'>
+</form>
+
 </body>
 </html>

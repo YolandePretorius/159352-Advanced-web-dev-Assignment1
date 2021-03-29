@@ -1,0 +1,14 @@
+[
+	{
+		"Stock": "TSLA",
+		"Quantity": "2",
+		"Price": "3",
+		"Gain/Loss": "4"
+	},
+	{
+		"Stock": "AAPL",
+		"Quantity": "50",
+		"Price": "15",
+		"Gain/Loss": "-5"
+	}
+]
