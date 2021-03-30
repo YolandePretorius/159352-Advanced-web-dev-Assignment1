@@ -19,6 +19,7 @@ from socket import *
 import pycurl
 import _thread
 from io import BytesIO
+import json
 
 serverSocket = socket(AF_INET, SOCK_STREAM)
 
@@ -33,138 +34,154 @@ print('The server is running')
 #Extract the given header value from the HTTP request message
 def getHeader(message, header):
 
-	if message.find(header) > -1:
-		value = message.split(header)[1].split()[0]
-	else:
-		value = None
+    if message.find(header) > -1:
+        value = message.split(header)[1].split()[0]
+    else:
+        value = None
 
-	return value
+    return value
 
 #service function to fetch the requested file, and send the contents back to the client in a HTTP response.
 def getFile(filename):
 
-	try:
+    try:
 
-		f = open(filename, "rb")
-		# Store the entire content of the requested file in a temporary buffer
-		body = f.read()
+        f = open(filename, "rb")
+        # Store the entire content of the requested file in a temporary buffer
+        body = f.read()
 
-		# if the filename ends with (png||jpg) then set the Content-Type to be "image/(png||jpg)"
-		if filename.endswith(('png', 'jpg')):
-			contentType = "image/" + filename.split('.')[-1]
-		# else set the Content-Type to be "text/html"
-		else:
-			contentType = "text/html"
+        # if the filename ends with (png||jpg) then set the Content-Type to be "image/(png||jpg)"
+        if filename.endswith(('png', 'jpg')):
+            contentType = "image/" + filename.split('.')[-1]
+        # else set the Content-Type to be "text/html"
+        else:
+            contentType = "text/html"
 
-		header = ("HTTP/1.1 200 OK\r\nContent-Type:" + contentType + "\r\n\r\n").encode()
+        header = ("HTTP/1.1 200 OK\r\nContent-Type:" + contentType + "\r\n\r\n").encode()
 
-	except IOError:
+    except IOError:
 
-		# Send HTTP response message for resource not found
-		header = "HTTP/1.1 404 Not Found\r\n\r\n".encode()
-		body = "<html><head></head><body><h1>404 Not Found</h1></body></html>\r\n".encode()
+        # Send HTTP response message for resource not found
+        header = "HTTP/1.1 404 Not Found\r\n\r\n".encode()
+        body = "<html><head></head><body><h1>404 Not Found</h1></body></html>\r\n".encode()
 
-	return header, body
+    return header, body
 
 #service function to generate HTTP response with a simple welcome message
 def welcome(message):
 
 
-	header = "HTTP/1.1 200 OK\r\n\r\n".encode()
-	body = ("<html><head></head><body><h1>Welcome to my homepage</h1></body></html>\r\n").encode()
+    header = "HTTP/1.1 200 OK\r\n\r\n".encode()
+    body = ("<html><head></head><body><h1>Welcome to my homepage</h1></body></html>\r\n").encode()
 
 
-	return header, body
+    return header, body
 
 #default service function
 def default(message):
 
-	header, body = welcome(message)
+    header, body = welcome(message)
 
-	return header, body
+    return header, body
 
 
 #We process client request here. The requested resource in the URL is mapped to a service function which generates the HTTP reponse 
 #that is eventually returned to the client. 
 def stock(resource):
-	header, body = getFile(resource.html)
-	return header, body
+    header, body = getFile(resource.html)
+    return header, body
 
-def getSymbol(resource):
 
-	symbol = 'A'
+def getSymbols(resource):
 
-	response_buffer = BytesIO()
+    symbol = 'A'
 
-	curl = pycurl.Curl()
-	curl.setopt(curl.SSL_VERIFYPEER, False)
-	curl.setopt(curl.URL, 'https://cloud.iexapis.com/stable/ref-data/symbols?token=pk_aff9e28203a3436cb258c9f4ec9f5dbb')
+    response_buffer = BytesIO()
 
-	curl.setopt(curl.WRITEFUNCTION, response_buffer.write)
+    curl = pycurl.Curl()
+    curl.setopt(curl.SSL_VERIFYPEER, False)
+    curl.setopt(curl.URL, 'https://cloud.iexapis.com/stable/ref-data/symbols?token=pk_aff9e28203a3436cb258c9f4ec9f5dbb')
 
-	print("here is your responce: ",)
+    curl.setopt(curl.WRITEFUNCTION, response_buffer.write)
 
-	curl.perform()
-	curl.close()
+    print("here is your responce: ")
 
-	body = response_buffer.getvalue().decode('UTF-8')
-	body2 = body.encode()
-	header = "HTTP/1.1 200 OK\r\n\r\n".encode()
-	return header, body
+    curl.perform()
+    curl.close()
+
+    dataReceived = json.loads(response_buffer.getvalue().decode('UTF-8'))
+
+    # Filter python objects with list comprehensions
+    output_dict = [x for x in dataReceived if x['type'] == 'cs']
+
+    # Transform python object back into json
+    body = json.dumps(output_dict)
+
+    # Show json
+   # print(output_json)
+
+
+    body2 = body.encode()
+    header = "HTTP/1.1 200 OK\r\n\r\n".encode()
+    return header, body2
+
+
 
 def portfolio(resource):
 
-	FileName = resource + ".html"
-	print("")
-	getSymbol("A")
-	#println("Inside portfolio")
-	header, body = getFile(FileName)
-	return header, body
+    FileName = resource + ".html"
+    print("")
+    #getSymbol("A")
+    #println("Inside portfolio")
+    header, body = getFile(FileName)
+    return header, body
 
 
 
 def process(connectionSocket) :
-	# Receives the request message from the client
-	message = connectionSocket.recv(1024).decode()
+    # Receives the request message from the client
+    message = connectionSocket.recv(1024).decode()
 
 
-	if len(message) > 1:
+    if len(message) > 1:
 
 
-		# Extract the path of the requested object from the message
-		# Because the extracted path of the HTTP request includes
-		# a character '/', we read the path from the second character
-		resource = message.split()[1][1:]
+        # Extract the path of the requested object from the message
+        # Because the extracted path of the HTTP request includes
+        # a character '/', we read the path from the second character
+        resource = message.split()[1][1:]
 
-		#map requested resource (contained in the URL) to specific function which generates HTTP response 
-		if resource == "":
-			responseHeader, responseBody = default(message)
-		elif resource == "welcome":
-			responseHeader,responseBody = welcome(message)
-		elif resource == "stock":
-			responseHeader,responseBody = stock(message)
-		elif resource == "portfolio":
-			responseHeader,responseBody = portfolio(resource)
-		else:
-			responseHeader,responseBody = getFile(resource)
+        #map requested resource (contained in the URL) to specific function which generates HTTP response
+        if resource == "":
+            responseHeader, responseBody = default(message)
+        elif resource == "welcome":
+            responseHeader,responseBody = welcome(message)
+        elif resource == "stock":
+            responseHeader,responseBody = stock(message)
+        elif resource == "portfolio":
+            responseHeader,responseBody = portfolio(resource)
+        elif resource == "getSymbols":
+            responseHeader,responseBody = getSymbols(resource)
+        else:
+            responseHeader,responseBody = getFile(resource)
 
-	# Send the HTTP response header line to the connection socket
-	connectionSocket.send(responseHeader)
-	# Send the content of the HTTP body (e.g. requested file) to the connection socket
-	connectionSocket.send(responseBody)
-	# Close the client connection socket
-	connectionSocket.close()
+    # Send the HTTP response header line to the connection socket
+    connectionSocket.send(responseHeader)
+    # Send the content of the HTTP body (e.g. requested file) to the connection socket
+    connectionSocket.send(responseBody)
+    # Close the client connection socket
+    connectionSocket.close()
 
 
 #Main web server loop. It simply accepts TCP connections, and get the request processed in seperate threads.
 while True:
-	
-	# Set up a new connection from the client
-	connectionSocket, addr = serverSocket.accept()
-	#Clients timeout after 60 seconds of inactivity and must reconnect.
-	connectionSocket.settimeout(60)
-	# start new thread to handle incoming request
-	_thread.start_new_thread(process,(connectionSocket,))
+
+    # Set up a new connection from the client
+    connectionSocket, addr = serverSocket.accept()
+    #Clients timeout after 60 seconds of inactivity and must reconnect.
+    connectionSocket.settimeout(60)
+    # start new thread to handle incoming request
+    _thread.start_new_thread(process,(connectionSocket,))
 
 
 

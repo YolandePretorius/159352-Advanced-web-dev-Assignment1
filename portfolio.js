@@ -5,8 +5,46 @@ function hello(){
 alert("Hello")
 }
 
-function setData( ){
+/*function dropDownList(){
+               //var obj, dbParam, xmlhttp, myObj, x, txt = "";
+                //obj = { table: "symbol", limit: 20 };
+                //dbParam = JSON.stringify(obj);
+                xmlhttp = new XMLHttpRequest();
+                xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            myObj = JSON.parse(this.responseText);
+            txt += "<select>"
+            for (x in myObj) {
+              txt += "<option>" + myObj[x].symbol;
+            }
+            txt += "</select>"
+            document.getElementById("demo").innerHTML = txt;
+          }
+        };
+        xmlhttp.open("POST",getSymbols.php, true);
+        xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xmlhttp.send("x=" + dbParam);
+}*/
+
+function dropDownList(){
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        myObj = JSON.parse(this.responseText);
+        tableFromJson(myObj)
+        //document.getElementById("demo").innerHTML = myObj.name;
+      }
+        };
+        xmlhttp.open("GET", "getSymbols", true);
+        xmlhttp.send();
+
+}
+
+
+
+function setData(){
  alert("add a list to data")
+    //dropDown list()
 }
 
 function getData(){
@@ -20,6 +58,8 @@ function getData(){
         };
         xmlhttp.open("GET", "portfolio.json", true);
         xmlhttp.send();
+
+        dropDownList();
 }
 
 // used code from https://www.encodedna.com/javascript/practice-ground/default.htm?pg=convert_json_to_table_javascript

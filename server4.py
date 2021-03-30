@@ -112,6 +112,7 @@ def location(message):
 
 	#It may seem redundant to decode and then encode. However if you want to be able to parse the XML data, it has to be decoded first.
 	body = body.encode()
+
 	header = "HTTP/1.1 200 OK\r\n\r\n".encode()
 
 
