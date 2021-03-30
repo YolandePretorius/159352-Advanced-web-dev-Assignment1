@@ -20,6 +20,7 @@ import pycurl
 import _thread
 from io import BytesIO
 import json
+from operator import itemgetter
 
 serverSocket = socket(AF_INET, SOCK_STREAM)
 
@@ -93,7 +94,7 @@ def stock(resource):
 
 
 def getSymbols(resource):
-
+    SymbolsList =[]
     symbol = 'A'
 
     response_buffer = BytesIO()
@@ -114,8 +115,17 @@ def getSymbols(resource):
     # Filter python objects with list comprehensions
     output_dict = [x for x in dataReceived if x['type'] == 'cs']
 
+    for object in output_dict:
+        print(object["symbol"])
+        SymbolsList.append(object["symbol"])
+
+
+    #SymbolsList = list(map(itemgetter('symbol'), output_dict))
+    #SymbolsList = [ sub['symbol'] for sub in output_dict ]
+    #SymbolsList = [x for x in output_dict if  x['symbol'][0]]
+
     # Transform python object back into json
-    body = json.dumps(output_dict)
+    body = json.dumps(SymbolsList)
 
     # Show json
    # print(output_json)
