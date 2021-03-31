@@ -147,6 +147,17 @@ def portfolio(resource):
     return header, body
 
 
+def SendData(resource):
+
+    print("change incomming data to json")
+   # resource.json;
+    print(resource.json)
+    print("change  data to json")
+    header, body = welcome(resource)
+    return header,body
+
+
+
 
 def process(connectionSocket) :
     # Receives the request message from the client
@@ -172,6 +183,8 @@ def process(connectionSocket) :
             responseHeader,responseBody = portfolio(resource)
         elif resource == "getSymbols":
             responseHeader,responseBody = getSymbols(resource)
+        elif resource == "SendData":
+            responseHeader,responseBody = SendData(message)
         else:
             responseHeader,responseBody = getFile(resource)
 

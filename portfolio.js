@@ -6,6 +6,19 @@ function hello(){
 alert("Hello")
 }
 
+/*function validateInput(){
+
+    const Quantity = document.getElementById("quantity");
+    Quantity.addEventListener("input", function (event) {
+  if (isNaN(Quantity.value)) {
+     Quantity.setCustomValidity("Must be a number");
+  } else {
+    Quantity.setCustomValidity("");
+  }
+});
+
+}*/
+
 /*function dropDownList(){
                //var obj, dbParam, xmlhttp, myObj, x, txt = "";
                 //obj = { table: "symbol", limit: 20 };
@@ -45,7 +58,7 @@ function dropDownList(){
 
 function setData(){
  alert("add a list to data")
-    //dropDown list()
+
 }
 
 function getData(){
@@ -65,19 +78,6 @@ function getData(){
 
 // used code from https://www.encodedna.com/javascript/practice-ground/default.htm?pg=convert_json_to_table_javascript
 function tableFromJson(stockItems){
-// the json data. (you can change the values for output.)
-        /*var stockItems = [
-
-            {"Stock": "TSLA", "Quantity": "200",
-                "Price": "300", "Gain/Loss": "400"
-            },
-            {"Stock": "AAPL", "Quantity": "50",
-                "Price": "150", "Gain/Loss": "-5"
-            },
-
-
-
-        ]*/
 
 stockItems.push({"Stock": "ABC", "Quantity": "200",
                 "Price": "500", "Gain/Loss": "400"
@@ -126,6 +126,7 @@ stockItems.push({"Stock": "ABC", "Quantity": "200",
      // document.getElementById('msg').innerHTML = '<br />You can later <a href="https://www.encodedna.com/javascript/dynamically-add-remove-rows-to-html-table-using-javascript-and-save-data.htm" target="_blank" style="color:#1464f4;text-decoration:none;">get all the data from table and save it in a database.</a>';
     }
 
+/* code used from https://www.w3schools.com/howto/howto_js_autocomplete.asp*/
 function autocomplete(inp, arr) {
     /*the autocomplete function takes two arguments,
     the text field element and an array of possible autocompleted values:*/

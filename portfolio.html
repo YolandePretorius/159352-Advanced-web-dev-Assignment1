@@ -22,7 +22,7 @@
 
     </style>
 </head>
-<body onload="getData()">
+<body onload="dropDownList()">
 
 <h3>Welcome to your portfolio</h3>
 
@@ -33,20 +33,25 @@
 
 <p id='msg'></p>
 
-<form method="post">
+<form>
+<section class="enquiries">
 
-
-    <label for="stock">Stock symbol: </label><br>
-    <input type="text" id="stock" name="StockSym" value="Stock"><br>
+    <div class="autocomplete" style="width:300px;">
+        <label for="symbolInput">Symbol:</label><br>
+        <input id="symbolInput" type="text" name="Symbol" placeholder="Symbol" required minlength="6" maxlength="6">
+    </div>
 
     <label for="quantity">Quantity:</label><br>
-    <input type="text" id="quantity" name="quantity" value="Quantity"><br>
+    <input type="number" id="quantity" name="quantity"><br>
 
-    <label for="price">Price: </label><br>
-    <input type="text" id="price" name="price" value="Price"><br><br>
+    <label for="price">Price $: </label><br>
+    <input type="number" id="price" name="price"><br><br>
 
     <input type="button" value="reset" onclick='setData()'>
     <input type="button" value="update" onclick='setData()'>
+
+</section>
+    <!-- <button class="button" type="submit">Send</button>-->
 </form>
 
 
@@ -55,19 +60,18 @@
 <p id="demo"></p>
 
 
+
+
+
 <!--Make sure the form has the autocomplete function switched off:-->
 <!--<form autocomplete="off" action="/action_page.php">-->
-<div class="autocomplete" style="width:300px;">
+<!--<div class="autocomplete" style="width:300px;">
     <input id="symbolInput" type="text" name="Symbol" placeholder="Symbol">
     <script></script>
 
-</div>
+</div>-->
 <!--<input type="submit">-->
 <!--</form>-->
 
-
-<script>
-
-</script>
 </body>
 </html>
