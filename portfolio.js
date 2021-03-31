@@ -57,9 +57,32 @@ function dropDownList(){
 }
 
 function setData(){
- alert("add a list to data")
+         alert("add a list to data")
+         symbolInput = document.getElementById("symbolInput");
+         quantity = document.getElementById("quantity");
+         price = document.getElementById("price");
 
-}
+
+         a = symbolInput.value;
+
+         b = quantity.value;
+         c = price.value;
+
+         obj = {symbol:a,quantity:b,price:c};
+
+         dbParam = JSON.stringify(obj);
+         alert(dbParam)
+         xmlhttp = new XMLHttpRequest();
+         xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200){
+            getData();
+          }}
+
+        xmlhttp.open("POST", "SendData", true);
+        xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xmlhttp.send(dbParam);
+
+        }
 
 function getData(){
     var xmlhttp = new XMLHttpRequest();

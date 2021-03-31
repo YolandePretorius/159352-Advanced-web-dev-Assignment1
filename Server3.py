@@ -90,12 +90,12 @@ def default(message):
 #that is eventually returned to the client. 
 def stock(resource):
     header, body = getFile(resource.html)
-    return header, body
+    return header,
 
 
+SymbolsList =[]
 def getSymbols(resource):
-    SymbolsList =[]
-    symbol = 'A'
+    #SymbolsList =[]
 
     response_buffer = BytesIO()
 
@@ -105,7 +105,7 @@ def getSymbols(resource):
 
     curl.setopt(curl.WRITEFUNCTION, response_buffer.write)
 
-    print("here is your responce: ")
+    print("here is your response: ")
 
     curl.perform()
     curl.close()
@@ -116,13 +116,9 @@ def getSymbols(resource):
     output_dict = [x for x in dataReceived if x['type'] == 'cs']
 
     for object in output_dict:
-        print(object["symbol"])
+       # print(object["symbol"])
         SymbolsList.append(object["symbol"])
 
-
-    #SymbolsList = list(map(itemgetter('symbol'), output_dict))
-    #SymbolsList = [ sub['symbol'] for sub in output_dict ]
-    #SymbolsList = [x for x in output_dict if  x['symbol'][0]]
 
     # Transform python object back into json
     body = json.dumps(SymbolsList)
@@ -136,24 +132,69 @@ def getSymbols(resource):
     return header, body2
 
 
+def validateSymbol(symbol):
+    if symbol in SymbolsList:
+        return True
+    else:
+        return False
+
+
+priceList =[]
+def getStockPrice(symbol):
+
+    response_buffer = BytesIO()
+    symbol = "A"
+    print(response_buffer)
+    curl = pycurl.Curl()
+    curl.setopt(curl.SSL_VERIFYPEER, False)
+    curl.setopt(curl.URL, 'https://cloud.iexapis.com/stable/stock/' +symbol+ '/quote?token=pk_aff9e28203a3436cb258c9f4ec9f5dbb')
+
+    #https://cloud.iexapis.com/stable/stock/symbol/quote?token=pk_aff9e28203a3436cb258c9f4ec9f5dbb
+
+    curl.setopt(curl.WRITEFUNCTION, response_buffer.write)
+
+    print("here is your response: ")
+
+    curl.perform()
+    curl.close()
+
+    dataReceived = json.loads(response_buffer.getvalue().decode('UTF-8'))
+    print(dataReceived)
+
+    latestPrice = dataReceived['latestPrice']
+    return(latestPrice)
+
+def getOldStockPrice(symbol):
+    file = open('portfolio.json',"rb")
+    data = file.read()
+
+    JSONFileValues =   json.load(file)
+
+    ObjlistJSONFILE =  json.dumps(JSONFileValues,)
+
+    #oldPrice = JSONFileValues(object[symbol]['price'])
+    file.close()
 
 def portfolio(resource):
 
     FileName = resource + ".html"
-    print("")
-    #getSymbol("A")
-    #println("Inside portfolio")
     header, body = getFile(FileName)
     return header, body
 
 
-def SendData(resource):
+def SendData(message):
 
-    print("change incomming data to json")
-   # resource.json;
-    print(resource.json)
-    print("change  data to json")
-    header, body = welcome(resource)
+    DataObjectList = json.loads(message.split())
+    symbol = DataObjectList["symbol"]
+    quantity = DataObjectList["quantity"]
+    price = DataObjectList["price"]
+    validSymbol = validateSymbol(symbol)
+   # if  validSymbol == False:
+    getLatestPrice = getStockPrice(symbol)
+    getOldPrice = getOldStockPrice(symbol)
+
+
+    header, body = welcome(message)
     return header,body
 
 
@@ -185,6 +226,10 @@ def process(connectionSocket) :
             responseHeader,responseBody = getSymbols(resource)
         elif resource == "SendData":
             responseHeader,responseBody = SendData(message)
+        elif resource == "getStockPrice":
+            responseHeader,responseBody = getStockPrice(message)
+        elif resource == "getOldStockPrice":
+            responseHeader,responseBody = getOldStockPrice(message)
         else:
             responseHeader,responseBody = getFile(resource)
 
