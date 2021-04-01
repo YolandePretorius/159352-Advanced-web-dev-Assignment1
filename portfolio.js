@@ -2,9 +2,6 @@
 var myObj = null;
 var symbolList = null;
 
-function hello(){
-alert("Hello")
-}
 
 /*function validateInput(){
 
@@ -44,7 +41,6 @@ function dropDownList(){
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
-            alert("Got data");
             myObj = JSON.parse(this.responseText);
             //tableFromJson(myObj)
             //document.getElementById("demo").innerHTML = myObj.name;
@@ -57,7 +53,8 @@ function dropDownList(){
 }
 
 function setData(){
-         alert("add a list to data")
+
+
          symbolInput = document.getElementById("symbolInput");
          quantity = document.getElementById("quantity");
          price = document.getElementById("price");
@@ -71,12 +68,12 @@ function setData(){
          obj = {symbol:a,quantity:b,price:c};
 
          dbParam = JSON.stringify(obj);
-         alert(dbParam)
-         xmlhttp = new XMLHttpRequest();
+         var xmlhttp = new XMLHttpRequest();
          xmlhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200){
-            getData();
-          }}
+              if (this.readyState == 4 && this.status == 200){
+                getData();
+              }
+         };
 
         xmlhttp.open("POST", "SendData", true);
         xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -84,12 +81,35 @@ function setData(){
 
         }
 
+function getLatestPrice(){
+    //Symbol = document.getElementById("symbol").value
+
+    //symbolInput = document.getElementById("symbolInput");
+    symbolInput = document.getElementById("symbolInput");
+    symbol = symbolInput.value; // 'AAPL'
+    a = symbolInput.value;
+    obj = {symbol:a}
+    dbParam = JSON.stringify(obj);
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+      ;
+            myObj = JSON.parse(this.responseText);
+            document.getElementById("price").value = myObj;
+
+          }
+    };
+    xmlhttp.open("POST", "getNewStockPrice", true);
+    xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xmlhttp.send(dbParam);
+}
+
 function getData(){
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             myObj = JSON.parse(this.responseText);
-            tableFromJson(myObj)
+            tableFromJson(myObj);
             //document.getElementById("demo").innerHTML = myObj.name;
         }
     };
@@ -97,14 +117,12 @@ function getData(){
     xmlhttp.send();
 
     dropDownList();
+    //getLatestPrice();
 }
 
 // used code from https://www.encodedna.com/javascript/practice-ground/default.htm?pg=convert_json_to_table_javascript
 function tableFromJson(stockItems){
 
-stockItems.push({"Stock": "ABC", "Quantity": "200",
-                "Price": "500", "Gain/Loss": "400"
-            });
         // Extract value from table header.
         var col = [];
         for (var i = 0; i < stockItems.length; i++) {

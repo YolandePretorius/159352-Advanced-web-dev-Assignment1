@@ -1,0 +1,14 @@
+[
+	{
+		"symbol": "TSLA",
+		"quantity": "2",
+		"price": "3",
+		"gain/loss": "4"
+	},
+	{
+		"symbol": "AAPL",
+		"quantity": "50",
+		"price": "15",
+		"gain/loss": "-5"
+	}
+]
