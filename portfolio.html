@@ -37,14 +37,14 @@
 <section class="enquiries">
 
     <div class="autocomplete" style="width:300px;">
-        <label for="symbolInput">Symbol:</label><br>
+        <label for="symbolInput">Stock symbol(start typing):</label><br>
         <input id="symbolInput" type="text" name="Symbol" placeholder="Symbol" required minlength="6" maxlength="6" onchange="getLatestPrice()">
     </div>
 
     <label for="quantity">Quantity:</label><br>
     <input type="number" id="quantity" name="quantity"><br>
 
-    <label for="price">Price $: </label><br>
+    <label for="price">Price per stock $: </label><br>
     <input  type="text" id="price" name="price"><br><br>
 
     <input type="button" value="reset" onclick='setData()'>
@@ -59,19 +59,6 @@
 
 <p id="demo"></p>
 
-
-
-
-
-<!--Make sure the form has the autocomplete function switched off:-->
-<!--<form autocomplete="off" action="/action_page.php">-->
-<!--<div class="autocomplete" style="width:300px;">
-    <input id="symbolInput" type="text" name="Symbol" placeholder="Symbol">
-    <script></script>
-
-</div>-->
-<!--<input type="submit">-->
-<!--</form>-->
 
 </body>
 </html>
