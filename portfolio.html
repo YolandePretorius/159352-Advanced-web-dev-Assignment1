@@ -33,12 +33,12 @@
 
 <p id='msg'></p>
 
-
+<form>
 <section class="enquiries">
 
     <div class="autocomplete" style="width:300px;">
         <label for="symbolInput">Stock symbol(start typing):</label><br>
-        <input id="symbolInput" type="text" name="Symbol" placeholder="Symbol" required minlength="6" maxlength="6" onchange="getLatestPrice()">
+        <input id="symbolInput" type="text" name="Symbol" placeholder="Symbol" required minlength="6" maxlength="6">
     </div>
 
     <label for="quantity">Quantity:</label><br>
@@ -47,15 +47,11 @@
     <label for="price">Price per stock $: </label><br>
     <input  type="text" id="price" name="price"><br><br>
 
-    <input type="button" value="reset" onclick='setData()'>
+    <input type="reset" value="Reset">
     <input type="button" value="update" onclick='setData()'>
 
 </section>
-    <!-- <button class="button" type="submit">Send</button>-->
-
-
-
-<h2>Make a drop down list based on JSON data.</h2>
+</form>
 
 <p id="demo"></p>
 

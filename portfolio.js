@@ -73,6 +73,9 @@ function setData(){
               if (this.readyState == 4 && this.status == 200){
                 getData();
               }
+              if(this.readyState == 4 && this.status == 404){
+               alert("Some data provided is invalid")
+               }
          };
 
         xmlhttp.open("POST", "SendData", true);
@@ -81,28 +84,32 @@ function setData(){
 
         }
 
-function getLatestPrice(){
+/*function getLatestPrice(){
     //Symbol = document.getElementById("symbol").value
 
     //symbolInput = document.getElementById("symbolInput");
     symbolInput = document.getElementById("symbolInput");
-    symbol = symbolInput.value; // 'AAPL'
+    priceInput = document.getElementById("price");
+    symbol = symbolInput.value;
     a = symbolInput.value;
-    obj = {symbol:a}
+
+    b = priceInput.value;
+
+    obj = {symbol:a,price:b}
     dbParam = JSON.stringify(obj);
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
       ;
-            myObj = JSON.parse(this.responseText);
-            document.getElementById("price").value = myObj;
+            //myObj = JSON.parse(this.responseText);
+            //document.getElementById("price").value = myObj;
 
           }
     };
     xmlhttp.open("POST", "getNewStockPrice", true);
     xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xmlhttp.send(dbParam);
-}
+}*/
 
 function getData(){
     var xmlhttp = new XMLHttpRequest();
@@ -164,7 +171,6 @@ function tableFromJson(stockItems){
  /*code used from  https://www.w3schools.com/howto/howto_js_autocomplete.asp*/
 
 
-     // document.getElementById('msg').innerHTML = '<br />You can later <a href="https://www.encodedna.com/javascript/dynamically-add-remove-rows-to-html-table-using-javascript-and-save-data.htm" target="_blank" style="color:#1464f4;text-decoration:none;">get all the data from table and save it in a database.</a>';
     }
 
 /* code used from https://www.w3schools.com/howto/howto_js_autocomplete.asp*/

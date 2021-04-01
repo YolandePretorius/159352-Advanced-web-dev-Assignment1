@@ -89,8 +89,9 @@ def default(message):
 #We process client request here. The requested resource in the URL is mapped to a service function which generates the HTTP reponse 
 #that is eventually returned to the client. 
 def stock(resource):
-    header, body = getFile(resource.html)
-    return header,
+    FileName = resource + ".html"
+    header, body = getFile(FileName)
+    return header, body
 
 
 SymbolsList =[]
@@ -122,9 +123,6 @@ def getSymbols(resource):
 
     # Transform python object back into json
     body = json.dumps(SymbolsList)
-
-    # Show json
-   # print(output_json)
 
 
     body2 = body.encode()
@@ -172,8 +170,7 @@ def getOldStockPrice(Getsymbol):
             if(Getsymbol == i['symbol']):
                # print(i['price'])
                 return(i['price'])
-            else:
-                return 0
+
 
 def getOldQuantity(Getsymbol):
 
@@ -186,8 +183,7 @@ def getOldQuantity(Getsymbol):
             if(Getsymbol == i['symbol']):
               #  print(i['quantity'])
                 return(i['quantity'])
-            else:
-                return 0
+
 
 
 
@@ -195,7 +191,7 @@ def getNewStockPrice(message):
      DataObjectList = message.split()[-1]
      dataReceived = json.loads(DataObjectList)
      symbol = dataReceived["symbol"]
-     newSP = getStockPrice(symbol)
+     newSP = getStockPrice(symbol) # latest stock price
      body = json.dumps(newSP)
      body2 = body.encode()
      header = "HTTP/1.1 200 OK\r\n\r\n".encode()
@@ -209,15 +205,27 @@ def portfolio(resource):
     header, body = getFile(FileName)
     return header, body
 
-def ResetTableWithLatestValues(Getsymbol,quantity,price,getLatestPrice, getOldPrice,OldQuantityValue):
+def ResetTableWithLatestValues(Getsymbol,quantity,price,getLatestPrice, getOldPrice,OldQuantityValue, datareceivedThroughInput):
 
-     if getOldPrice == 0:
+     if OldQuantityValue == None:
+         OldQuantityValue = 0
+
+
+     priceFloat = float(price)
+
+     if priceFloat < 0:
+         return False
+
+     averagePrice = round((float(price) + float(getLatestPrice))/2,2)
+
+     if priceFloat == 0:
          GainOrLoss = 0
      else:
-         priceFloat = float(getOldPrice)
          GainOrLoss = round(((getLatestPrice - priceFloat) / priceFloat)*100,2)
 
      NewQuantity = int(OldQuantityValue) + int(quantity)
+
+     checkSybolInJSONFIle = False
 
      if NewQuantity < 0:
          return False
@@ -225,32 +233,24 @@ def ResetTableWithLatestValues(Getsymbol,quantity,price,getLatestPrice, getOldPr
      a_file = open("portfolio.json", "r")
      data = json.load(a_file)
      a_file.close()
-     print(data)
 
-     #with open('portfolio.json') as json_file:
-       # body = json_file.read()
-        #data = json.loads(body)
      for i in data:
          if(Getsymbol in i['symbol']):
-             i['price'] = getLatestPrice
+             checkSybolInJSONFIle = True
+             i['price'] = averagePrice
              i['gain/loss'] = GainOrLoss
              i['quantity'] = NewQuantity
 
-     for i in data:
-         if(Getsymbol not in i['symbol']):
-             newData = {'symbol': Getsymbol, 'quantity': quantity, 'price': getLatestPrice, 'gain/loss': GainOrLoss}
-             newListData = i.append(newData)
-             data = newListData
 
-     print(data)
+     if(checkSybolInJSONFIle == False):
+         newData = {'symbol': Getsymbol, 'quantity': quantity, 'price': priceFloat, 'gain/loss': GainOrLoss}
+
+         data.append(newData)
 
 
-     with open('portfolio.json', 'w+') as f:
+     with open('portfolio.json', 'w') as f:
         json.dump(data, f)
 
-    # a_file = open("p3.json", "w+")
-     #a_file.write(json.dump(data))
-     #a_file.close()
 
 
 
@@ -266,7 +266,7 @@ def SendData(message):
     getLatestPrice = getStockPrice(symbol)
     getOldPrice = getOldStockPrice(symbol)
     getOldQuantityValue = getOldQuantity(symbol)
-    ResetTable = ResetTableWithLatestValues(symbol,quantity,price,getLatestPrice, getOldPrice,getOldQuantityValue)
+    ResetTable = ResetTableWithLatestValues(symbol,quantity,price,getLatestPrice, getOldPrice,getOldQuantityValue,dataReceived)
     if ResetTable == False:
          header = "HTTP/1.1 404 Not Found\r\n\r\n".encode()
          body = "<html><head></head><body><h1>404 Not Found</h1></body></html>\r\n".encode()
@@ -297,7 +297,7 @@ def process(connectionSocket) :
         elif resource == "welcome":
             responseHeader,responseBody = welcome(message)
         elif resource == "stock":
-            responseHeader,responseBody = stock(message)
+            responseHeader,responseBody = stock(resource)
         elif resource == "portfolio":
             responseHeader,responseBody = portfolio(resource)
         elif resource == "getSymbols":

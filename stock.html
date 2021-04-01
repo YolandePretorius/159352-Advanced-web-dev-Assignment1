@@ -2,9 +2,47 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <script type="text/javascript" src="portfolio.js"></script>
+    <!--<link type="text/css" rel="stylesheet" href="dropdownSymbol.css">-->
+    <title>Stock chart</title>
+
+    <style>
+        th, td, p, input, h3 {
+            font:15px 'Segoe UI';
+        }
+        table, th, td {
+            border: solid 1px #ddd;
+            border-collapse: collapse;
+            padding: 2px 3px;
+            text-align: center;
+        }
+        th {
+            font-weight:bold;
+        }
+
+    </style>
 </head>
-<body>
-    <p>Welcome to your stock page</p>
+<body onload="dropDownList()">
+
+<h3>Welcome to your stock chart page </h3>
+
+
+<form>
+<section class="enquiries">
+
+    <div class="autocomplete" style="width:300px;">
+        <label for="symbolInput">Stock symbol(start typing):</label><br>
+        <input id="symbolInput" type="text" name="Symbol" placeholder="Symbol" required minlength="6" maxlength="6">
+    </div>
+    <br/>
+    <input type="reset" value="Reset">
+    <input type="button" value="update" onclick='getGraphData'>
+
+</section>
+</form>
+
+<p id="demo"></p>
+
+
 </body>
 </html>
