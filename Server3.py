@@ -93,7 +93,7 @@ def getStock(message):
     DataObjectList = message.split()[-1]
     dataReceived = json.loads(DataObjectList)
     Newsymbol = dataReceived['symbol']
-    print(Newsymbol)
+
 
     response_buffer = BytesIO()
    # print(response_buffer)
@@ -110,7 +110,6 @@ def getStock(message):
     curl.close()
 
     GraphdataReceived = json.loads(response_buffer.getvalue().decode('UTF-8'))
-    print(GraphdataReceived)
     #print("You receive data")
 
     body = json.dumps(GraphdataReceived)

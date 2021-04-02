@@ -286,7 +286,6 @@ function getGraphData(){
          xmlhttp.onreadystatechange = function() {
               if (this.readyState == 4 && this.status == 200){
                  myObj = JSON.parse(this.responseText);
-                 alert(myObj);
                  drawGraph(myObj);
               }
               if(this.readyState == 4 && this.status == 404){
@@ -300,25 +299,31 @@ function getGraphData(){
 }
 
 function drawGraph(graphDataObject){
-
-    var chart = new CanvasJS.Chart("chartContainer", {
+var chart = new CanvasJS.Chart("chartContainer", {
 		title:{
-			text: "My First Chart in CanvasJS"
+			text: "Daily closing price for one year period (ytd)"
 		},
 		data: [
 		{
 			// Change type to "doughnut", "line", "splineArea", etc.
-			type: "column",
-			dataPoints: [
-				{ label: "apple",  y: 10  },
-				{ label: "orange", y: 15  },
-				{ label: "banana", y: 25  },
-				{ label: "mango",  y: 30  },
-				{ label: "grape",  y: 28  }
-			]
+			type: "line",
+			dataPoints: getStockDataArray(graphDataObject)
 		}
 		]
 	});
 	chart.render();
+}
 
+function getStockDataArray(graphDataObject)
+{
+    var dataPointsList = [];
+    for(var index in graphDataObject){
+        var item = getGraphItem(graphDataObject[index]);
+        dataPointsList.push(item);
+    }
+    return dataPointsList;
+}
+function getGraphItem(resultObj)
+{
+    return { label: resultObj["date"],  y: resultObj["close"] };
 }
