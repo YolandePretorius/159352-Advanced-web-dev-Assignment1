@@ -42,6 +42,7 @@ function dropDownList(){
     xmlhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
             myObj = JSON.parse(this.responseText);
+
             //tableFromJson(myObj)
             //document.getElementById("demo").innerHTML = myObj.name;
             symbolList = myObj;
@@ -52,6 +53,7 @@ function dropDownList(){
     xmlhttp.send();
 }
 
+/*
 function setData(){
 
 
@@ -74,7 +76,7 @@ function setData(){
                 getData();
               }
               if(this.readyState == 4 && this.status == 404){
-               alert("Some data provided is invalid");
+               alert("Some data provided is invalid")
                }
          };
 
@@ -83,6 +85,7 @@ function setData(){
         xmlhttp.send(dbParam);
 
         }
+*/
 
 /*function getLatestPrice(){
     //Symbol = document.getElementById("symbol").value
@@ -111,7 +114,7 @@ function setData(){
     xmlhttp.send(dbParam);
 }*/
 
-function getData(){
+/*function getData(){
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
@@ -125,10 +128,10 @@ function getData(){
 
     dropDownList();
     //getLatestPrice();
-}
+}*/
 
 // used code from https://www.encodedna.com/javascript/practice-ground/default.htm?pg=convert_json_to_table_javascript
-function tableFromJson(stockItems){
+/*function tableFromJson(stockItems){
 
         // Extract value from table header.
         var col = [];
@@ -168,10 +171,10 @@ function tableFromJson(stockItems){
         divShowData.innerHTML = "";
         divShowData.appendChild(table);
 
- /*code used from  https://www.w3schools.com/howto/howto_js_autocomplete.asp*/
+ *//*code used from  https://www.w3schools.com/howto/howto_js_autocomplete.asp*//*
 
 
-    }
+    }*/
 
 /* code used from https://www.w3schools.com/howto/howto_js_autocomplete.asp*/
 function autocomplete(inp, arr) {
@@ -273,4 +276,49 @@ function autocomplete(inp, arr) {
 
 
 
+function getGraphData(){
+    symbolInput = document.getElementById("symbolInput");
+    a = symbolInput.value;
+    obj = {symbol:a}
 
+    dbParam = JSON.stringify(obj);
+         var xmlhttp = new XMLHttpRequest();
+         xmlhttp.onreadystatechange = function() {
+              if (this.readyState == 4 && this.status == 200){
+                 myObj = JSON.parse(this.responseText);
+                 alert(myObj);
+                 drawGraph(myObj);
+              }
+              if(this.readyState == 4 && this.status == 404){
+               alert("Some data provided is invalid");
+               }
+         };
+        xmlhttp.open("POST", "getStock", true);
+        xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xmlhttp.send(dbParam);
+
+}
+
+function drawGraph(graphDataObject){
+
+    var chart = new CanvasJS.Chart("chartContainer", {
+		title:{
+			text: "My First Chart in CanvasJS"
+		},
+		data: [
+		{
+			// Change type to "doughnut", "line", "splineArea", etc.
+			type: "column",
+			dataPoints: [
+				{ label: "apple",  y: 10  },
+				{ label: "orange", y: 15  },
+				{ label: "banana", y: 25  },
+				{ label: "mango",  y: 30  },
+				{ label: "grape",  y: 28  }
+			]
+		}
+		]
+	});
+	chart.render();
+
+}

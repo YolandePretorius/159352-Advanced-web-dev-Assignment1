@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <script type="text/javascript" src="portfolio.js"></script>
+    <script type="text/javascript" src="graph.js"></script>
+     <script type="text/javascript" src="canvasjs.min.js"></script>
+
+
     <!--<link type="text/css" rel="stylesheet" href="dropdownSymbol.css">-->
     <title>Stock chart</title>
 
@@ -36,12 +39,13 @@
     </div>
     <br/>
     <input type="reset" value="Reset">
-    <input type="button" value="update" onclick='getGraphData'>
+    <input type="button" value="update" onclick= "getGraphData()">
 
 </section>
 </form>
 
-<p id="demo"></p>
+<div id="chartContainer" style="height: 300px; width: 100%;"></div>
+
 
 
 </body>

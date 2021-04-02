@@ -87,9 +87,44 @@ def default(message):
 
 
 #We process client request here. The requested resource in the URL is mapped to a service function which generates the HTTP reponse 
-#that is eventually returned to the client. 
+#that is eventually returned to the client.
+
+def getStock(message):
+    DataObjectList = message.split()[-1]
+    dataReceived = json.loads(DataObjectList)
+    Newsymbol = dataReceived['symbol']
+    print(Newsymbol)
+
+    response_buffer = BytesIO()
+   # print(response_buffer)
+    curl = pycurl.Curl()
+    curl.setopt(curl.SSL_VERIFYPEER, False)
+    curl.setopt(curl.URL, 'https://cloud.iexapis.com/stable/stock/' +Newsymbol+ '/chart/ytd?chartCloseOnly=true&token=pk_aff9e28203a3436cb258c9f4ec9f5dbb')
+
+    #https://cloud.iexapis.com/stable/stock/symbol/chart/ytd?chartCloseOnly=true&token=yourAPIToken
+    curl.setopt(curl.WRITEFUNCTION, response_buffer.write)
+
+   # print("here is your response: ")
+
+    curl.perform()
+    curl.close()
+
+    GraphdataReceived = json.loads(response_buffer.getvalue().decode('UTF-8'))
+    print(GraphdataReceived)
+    #print("You receive data")
+
+    body = json.dumps(GraphdataReceived)
+
+
+    body2 = body.encode()
+    header = "HTTP/1.1 200 OK\r\n\r\n".encode()
+    return header, body2
+
+
+
 def stock(resource):
     FileName = resource + ".html"
+
     header, body = getFile(FileName)
     return header, body
 
@@ -308,6 +343,8 @@ def process(connectionSocket) :
             responseHeader,responseBody = getNewStockPrice(message)
         elif resource == "getOldStockPrice":
             responseHeader,responseBody = getOldStockPrice(message)
+        elif resource == "getStock":
+            responseHeader,responseBody = getStock(message)
         else:
             responseHeader,responseBody = getFile(resource)
 
