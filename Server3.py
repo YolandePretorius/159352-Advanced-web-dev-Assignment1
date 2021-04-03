@@ -12,15 +12,19 @@
 #This web server runs on python v3
 #Usage: execute this program, open your browser (preferably chrome) and type http://servername:8080
 #e.g. if server.py and broswer are running on the same machine, then use http://localhost:8080
-
-
-
+import _thread
 from socket import *
 import pycurl
-import _thread
 from io import BytesIO
 import json
-from operator import itemgetter
+#import base64
+#from flask import Flask, request, Response
+
+from flask import Flask, request, Response
+import base64
+from functools import wraps
+
+
 
 serverSocket = socket(AF_INET, SOCK_STREAM)
 
@@ -29,6 +33,9 @@ serverSocket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 serverSocket.bind(("", serverPort))
 
 serverSocket.listen(5)
+
+
+
 print('The server is running')	
 # Server should be up and running and listening to the incoming connections
 
@@ -70,8 +77,6 @@ def getFile(filename):
 
 #service function to generate HTTP response with a simple welcome message
 def welcome(message):
-
-
     header = "HTTP/1.1 200 OK\r\n\r\n".encode()
     body = ("<html><head></head><body><h1>Welcome to my homepage</h1></body></html>\r\n").encode()
 
@@ -80,14 +85,13 @@ def welcome(message):
 
 #default service function
 def default(message):
+   # header = 'www-Authenticate','Basic realm=["Login.html"]'
 
     header, body = welcome(message)
-
     return header, body
 
 
-#We process client request here. The requested resource in the URL is mapped to a service function which generates the HTTP reponse 
-#that is eventually returned to the client.
+
 
 def getStock(message):
     DataObjectList = message.split()[-1]
@@ -126,6 +130,74 @@ def stock(resource):
 
     header, body = getFile(FileName)
     return header, body
+
+# def checkUserDetails(authorizationHeader):
+#     username = "123"
+#     password = "123"
+#     encodedUserName = authorizationHeader.split()[-1]
+#     #if encodedUserName == base64.b64encode(username + ":" + password):
+#     return  True
+#
+# def login(message):
+#
+#      splitMessage = message.split()
+#      authorization_header = getHeader(message,'Authorization')
+#
+#       #if authorization_header != None and checkUserDetails(authorization_header):
+#      if authorization_header == None:
+#         header = "HTTP/1.1 401 Unauthorized\r\n\r\n".encode()
+#         #body = "WWW-Authenticate: Basic realm=<Login.html>,charset=<UTF-8>\r\n\r\n".encode()
+#         body = "WWW-Authenticate: 'Basic' realm='Login.html'\r\n".encode()
+#         return header,body
+     # else:
+     #    header,body  = "HTTP/ 1.1 404 Not Found\r\n\r\n".encode()
+     #
+     #    return header,body
+     #header, body = welcome(message)
+
+
+#
+# def login2(message):
+#     print("Here is the message")
+#     splitMessage = message.split()
+#     print(splitMessage)
+#     print("message end ")
+#
+#     authorization_header = getHeader(message,'Authorization')
+#
+#     if authorization_header != None and checkUserDetails(authorization_header):
+#         header,body = "HTTP/1.1 200 OK\r\n\r\n".encode()
+#         return header
+#     else:
+#         header = "HTTP/1.1 404 Not Found\r\n\r\n".encode()
+#         body = "<html><head></head><body><h1>404 Not Found</h1></body></html>\r\n".encode()
+#        # header = www-Authenticate','Basic realm=["Login.html"].encode()
+#        # header = 'WWW-Authenticate: Basic realm="Login.html",charset="UTF-8"\r\n\r\n'.encode()
+#         #WWW-Authenticate: <type> realm=<realm>[, charset="UTF-8"]
+#         #resp.headers['WWW-Authenticate'] = 'Basic'
+#         return header,body
+
+
+    #
+    # foundInHeader = getHeader(message,'authorization')
+    # b = message.find('authorization')
+    #
+    #
+    # if foundInHeader == None :
+    #     print("False")
+    #     header  = 'www-Authenticate'
+    #     err =  error("You are not authenticated!")
+    #     return header, err
+        #header  = 'www-Authenticate','Basic realm=["Login.html"]'
+
+        #err.status = 401
+    #print("true")
+
+   #authHeader = message.headers.authorization
+
+   # header = "HTTP/1.1 401 Unauthorized\r\n\r\n".encode()
+   # return header
+
 
 
 SymbolsList =[]
@@ -310,7 +382,8 @@ def SendData(message):
     return header,body
 
 
-
+#We process client request here. The requested resource in the URL is mapped to a service function which generates the HTTP reponse
+#that is eventually returned to the client.
 
 def process(connectionSocket) :
     # Receives the request message from the client
@@ -344,6 +417,8 @@ def process(connectionSocket) :
             responseHeader,responseBody = getOldStockPrice(message)
         elif resource == "getStock":
             responseHeader,responseBody = getStock(message)
+        elif resource == "login":
+            responseHeader,responseBody = login(message)
         else:
             responseHeader,responseBody = getFile(resource)
 
