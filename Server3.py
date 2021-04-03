@@ -131,24 +131,70 @@ def stock(resource):
     header, body = getFile(FileName)
     return header, body
 
+def findHeader(message,header):
+    if message.find(header) > -1:
+        value = message.split(' ')[1]
+    else:
+        value = None
+
+    return value
+
 # def checkUserDetails(authorizationHeader):
-#     username = "123"
-#     password = "123"
-#     encodedUserName = authorizationHeader.split()[-1]
-#     #if encodedUserName == base64.b64encode(username + ":" + password):
-#     return  True
+#      print(authorizationHeader)
+#      username = "123"
+#      password = "123"
+#      encodedUserName = authorizationHeader.split()[-1]
+#      if encodedUserName == base64.b64encode(username + ":" + password):
+#          return  True
+
 #
-# def login(message):
-#
-#      splitMessage = message.split()
-#      authorization_header = getHeader(message,'Authorization')
-#
-#       #if authorization_header != None and checkUserDetails(authorization_header):
-#      if authorization_header == None:
-#         header = "HTTP/1.1 401 Unauthorized\r\n\r\n".encode()
-#         #body = "WWW-Authenticate: Basic realm=<Login.html>,charset=<UTF-8>\r\n\r\n".encode()
-#         body = "WWW-Authenticate: 'Basic' realm='Login.html'\r\n".encode()
-#         return header,body
+def login(message):
+     json.loads(message)
+     print(message)
+     authorization_header = findHeader(message,'Authorization')
+
+
+
+      #header = "HTTP/1.1 401 Authorization Required\r\nWWW-Authenticate: Basic realm='Private'".encode()
+      #authorization_header = getHeader(message,'Authorization')
+     print(authorization_header)
+     if authorization_header == None:
+          print("No authorization header")
+          header = "HTTP/1.1 401 Authorization Required\r\nWWW-Authenticate: Basic realm='Private'".encode()
+          print("No authorization header")
+          return header,"".encode()
+
+
+
+      # if authorization_header != None and checkUserDetails(authorization_header):
+      #     print("go")
+      # #       header = "HTTP/1.1 200 OK\r\n\r\n".encode()
+      # #       return header,"".encode()
+      # else:
+      #      print("Not authorized")
+      # #      header = "HTTP/1.1 401 Authorization Required\r\nWWW-Authenticate: Basic realm='Private'".encode()
+      # #      print("No authorization header")
+      # #      return header,"".encode()
+
+
+
+
+      #header = "HTTP/1.1 401 Authorization Required\r\nWWW-Authenticate: Basic realm='Private'".encode()
+
+#       splitMessage = message.split()
+#       authorization_header = getHeader(message,'Authorization')
+# # #
+# # #       #if authorization_header != None and checkUserDetails(authorization_header):
+#       if authorization_header == None:
+#            header = "HTTP/1.1 401 Authorization Required\r\nWWW-Authenticate: Basic realm='Private'".encode()
+#             header = "HTTP/1.1 401 Unauthorized WWW-Authenticate: Basic realm='Login.html', charset='UTF-8'\r\n".encode()
+# #           header,body = "HTTP/1.1 401 Unauthorized www-Authenticate Basic realm='My Realm' charset='UTF-8' \r\n\r\n".encode()
+# # #         #body = "WWW-Authenticate: Basic realm=<Login.html>,charset=<UTF-8>\r\n\r\n".encode()
+# # #         body = "WWW-Authenticate: 'Basic' realm='Login.html'\r\n".encode()
+#             body = ("<html><head></head><body><h1>Welcome to my homepage</h1></body></html>\r\n").encode()
+      #return  "".encode(), "".encode()
+#       else:
+      #checkUserDetails(authorization_header)
      # else:
      #    header,body  = "HTTP/ 1.1 404 Not Found\r\n\r\n".encode()
      #
@@ -172,7 +218,7 @@ def stock(resource):
 #         header = "HTTP/1.1 404 Not Found\r\n\r\n".encode()
 #         body = "<html><head></head><body><h1>404 Not Found</h1></body></html>\r\n".encode()
 #        # header = www-Authenticate','Basic realm=["Login.html"].encode()
-#        # header = 'WWW-Authenticate: Basic realm="Login.html",charset="UTF-8"\r\n\r\n'.encode()
+#        # header = 'WWW-Authenticate: Basic c,charset="UTF-8"\r\n\r\n'.encode()
 #         #WWW-Authenticate: <type> realm=<realm>[, charset="UTF-8"]
 #         #resp.headers['WWW-Authenticate'] = 'Basic'
 #         return header,body
@@ -400,27 +446,27 @@ def process(connectionSocket) :
 
         #map requested resource (contained in the URL) to specific function which generates HTTP response
         if resource == "":
-            responseHeader, responseBody = default(message)
+             responseHeader, responseBody = default(message)
         elif resource == "welcome":
-            responseHeader,responseBody = welcome(message)
+             responseHeader,responseBody = welcome(message)
         elif resource == "stock":
-            responseHeader,responseBody = stock(resource)
+             responseHeader,responseBody = stock(resource)
         elif resource == "portfolio":
-            responseHeader,responseBody = portfolio(resource)
+             responseHeader,responseBody = portfolio(resource)
         elif resource == "getSymbols":
-            responseHeader,responseBody = getSymbols(resource)
+             responseHeader,responseBody = getSymbols(resource)
         elif resource == "SendData":
-            responseHeader,responseBody = SendData(message)
+             responseHeader,responseBody = SendData(message)
         elif resource == "getNewStockPrice":
-            responseHeader,responseBody = getNewStockPrice(message)
+             responseHeader,responseBody = getNewStockPrice(message)
         elif resource == "getOldStockPrice":
-            responseHeader,responseBody = getOldStockPrice(message)
+             responseHeader,responseBody = getOldStockPrice(message)
         elif resource == "getStock":
-            responseHeader,responseBody = getStock(message)
+             responseHeader,responseBody = getStock(message)
         elif resource == "login":
-            responseHeader,responseBody = login(message)
+             responseHeader,responseBody = login(message)
         else:
-            responseHeader,responseBody = getFile(resource)
+             responseHeader,responseBody = getFile(resource)
 
     # Send the HTTP response header line to the connection socket
     connectionSocket.send(responseHeader)
