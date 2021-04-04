@@ -17,7 +17,6 @@ from socket import *
 import pycurl
 from io import BytesIO
 import json
-#import base64
 #from flask import Flask, request, Response
 
 from flask import Flask, request, Response
@@ -132,118 +131,62 @@ def stock(resource):
     return header, body
 
 def findHeader(message,header):
-    if message.find(header) > -1:
-        value = message.split(' ')[1]
+    for item in message:
+        if header in item:
+            return item
     else:
-        value = None
+        return None
 
-    return value
 
-# def checkUserDetails(authorizationHeader):
-#      print(authorizationHeader)
-#      username = "123"
-#      password = "123"
-#      encodedUserName = authorizationHeader.split()[-1]
-#      if encodedUserName == base64.b64encode(username + ":" + password):
-#          return  True
 
-#
+def checkUserDetails(authorizationHeader):
+    print(authorizationHeader)
+    username = "123"
+    password = "123"
+
+    usrPass = (username +':'+password).encode("utf-8")
+    encodedUserNameLogin = authorizationHeader.split(" ")[-1]
+    print(encodedUserNameLogin)
+    decodedUserNameLogin = base64.b64decode(encodedUserNameLogin)
+
+    print(decodedUserNameLogin)
+    print(usrPass)
+
+    if usrPass == decodedUserNameLogin:
+        return True
+    else:
+        return False
+
+
 def login(message):
-     json.loads(message)
-     print(message)
-     authorization_header = findHeader(message,'Authorization')
+     splitMessage = message.split("\r\n")
+     print(splitMessage)
+     authorization_header = findHeader(splitMessage,'Authorization')
 
 
 
       #header = "HTTP/1.1 401 Authorization Required\r\nWWW-Authenticate: Basic realm='Private'".encode()
       #authorization_header = getHeader(message,'Authorization')
      print(authorization_header)
-     if authorization_header == None:
+
+     # if authorization_header == None:
+     #      print("No authorization header")
+     #      header = "HTTP/1.1 401 Authorization Required\r\nWWW-Authenticate: Basic realm='Private'".encode()
+     #      print("No authorization header")
+     #      return header,"".encode()
+
+
+
+     if authorization_header != None and checkUserDetails(authorization_header):
+          print("go")
+          header = "HTTP/1.1 200 OK\r\n\r\n".encode()
+          return header,''.encode()
+
+     else:
           print("No authorization header")
           header = "HTTP/1.1 401 Authorization Required\r\nWWW-Authenticate: Basic realm='Private'".encode()
           print("No authorization header")
           return header,"".encode()
-
-
-
-      # if authorization_header != None and checkUserDetails(authorization_header):
-      #     print("go")
-      # #       header = "HTTP/1.1 200 OK\r\n\r\n".encode()
-      # #       return header,"".encode()
-      # else:
-      #      print("Not authorized")
-      # #      header = "HTTP/1.1 401 Authorization Required\r\nWWW-Authenticate: Basic realm='Private'".encode()
-      # #      print("No authorization header")
-      # #      return header,"".encode()
-
-
-
-
-      #header = "HTTP/1.1 401 Authorization Required\r\nWWW-Authenticate: Basic realm='Private'".encode()
-
-#       splitMessage = message.split()
-#       authorization_header = getHeader(message,'Authorization')
-# # #
-# # #       #if authorization_header != None and checkUserDetails(authorization_header):
-#       if authorization_header == None:
-#            header = "HTTP/1.1 401 Authorization Required\r\nWWW-Authenticate: Basic realm='Private'".encode()
-#             header = "HTTP/1.1 401 Unauthorized WWW-Authenticate: Basic realm='Login.html', charset='UTF-8'\r\n".encode()
-# #           header,body = "HTTP/1.1 401 Unauthorized www-Authenticate Basic realm='My Realm' charset='UTF-8' \r\n\r\n".encode()
-# # #         #body = "WWW-Authenticate: Basic realm=<Login.html>,charset=<UTF-8>\r\n\r\n".encode()
-# # #         body = "WWW-Authenticate: 'Basic' realm='Login.html'\r\n".encode()
-#             body = ("<html><head></head><body><h1>Welcome to my homepage</h1></body></html>\r\n").encode()
-      #return  "".encode(), "".encode()
-#       else:
-      #checkUserDetails(authorization_header)
-     # else:
-     #    header,body  = "HTTP/ 1.1 404 Not Found\r\n\r\n".encode()
-     #
-     #    return header,body
-     #header, body = welcome(message)
-
-
-#
-# def login2(message):
-#     print("Here is the message")
-#     splitMessage = message.split()
-#     print(splitMessage)
-#     print("message end ")
-#
-#     authorization_header = getHeader(message,'Authorization')
-#
-#     if authorization_header != None and checkUserDetails(authorization_header):
-#         header,body = "HTTP/1.1 200 OK\r\n\r\n".encode()
-#         return header
-#     else:
-#         header = "HTTP/1.1 404 Not Found\r\n\r\n".encode()
-#         body = "<html><head></head><body><h1>404 Not Found</h1></body></html>\r\n".encode()
-#        # header = www-Authenticate','Basic realm=["Login.html"].encode()
-#        # header = 'WWW-Authenticate: Basic c,charset="UTF-8"\r\n\r\n'.encode()
-#         #WWW-Authenticate: <type> realm=<realm>[, charset="UTF-8"]
-#         #resp.headers['WWW-Authenticate'] = 'Basic'
-#         return header,body
-
-
-    #
-    # foundInHeader = getHeader(message,'authorization')
-    # b = message.find('authorization')
-    #
-    #
-    # if foundInHeader == None :
-    #     print("False")
-    #     header  = 'www-Authenticate'
-    #     err =  error("You are not authenticated!")
-    #     return header, err
-        #header  = 'www-Authenticate','Basic realm=["Login.html"]'
-
-        #err.status = 401
-    #print("true")
-
-   #authHeader = message.headers.authorization
-
-   # header = "HTTP/1.1 401 Unauthorized\r\n\r\n".encode()
-   # return header
-
 
 
 SymbolsList =[]
