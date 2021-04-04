@@ -35,7 +35,9 @@ serverSocket.listen(5)
 
 
 
-print('The server is running')	
+
+print('The server is running')
+#loginVariable = False
 # Server should be up and running and listening to the incoming connections
 
 #Extract the given header value from the HTTP request message
@@ -150,7 +152,7 @@ def checkUserDetails(authorizationHeader):
     decodedUserNameLogin = base64.b64decode(encodedUserNameLogin)
 
     print(decodedUserNameLogin)
-    print(usrPass)
+
 
     if usrPass == decodedUserNameLogin:
         return True
@@ -169,18 +171,18 @@ def login(message):
       #authorization_header = getHeader(message,'Authorization')
      print(authorization_header)
 
-     # if authorization_header == None:
-     #      print("No authorization header")
-     #      header = "HTTP/1.1 401 Authorization Required\r\nWWW-Authenticate: Basic realm='Private'".encode()
-     #      print("No authorization header")
-     #      return header,"".encode()
+     if authorization_header == None:
+          print("No authorization header")
+          header = "HTTP/1.1 401 Authorization Required\r\nWWW-Authenticate: Basic realm='Private'".encode()
+          print("No authorization header")
+          return header,"".encode()
 
 
 
      if authorization_header != None and checkUserDetails(authorization_header):
           print("go")
           header = "HTTP/1.1 200 OK\r\n\r\n".encode()
-          return header,''.encode()
+          return None,None
 
      else:
           print("No authorization header")
@@ -373,10 +375,11 @@ def SendData(message):
 
 #We process client request here. The requested resource in the URL is mapped to a service function which generates the HTTP reponse
 #that is eventually returned to the client.
-
+loginVariable = False
 def process(connectionSocket) :
     # Receives the request message from the client
     message = connectionSocket.recv(1024).decode()
+    #loginVariable = False
 
 
     if len(message) > 1:
@@ -388,35 +391,40 @@ def process(connectionSocket) :
         resource = message.split()[1][1:]
 
         #map requested resource (contained in the URL) to specific function which generates HTTP response
-        if resource == "":
-             responseHeader, responseBody = default(message)
-        elif resource == "welcome":
-             responseHeader,responseBody = welcome(message)
-        elif resource == "stock":
-             responseHeader,responseBody = stock(resource)
-        elif resource == "portfolio":
-             responseHeader,responseBody = portfolio(resource)
-        elif resource == "getSymbols":
-             responseHeader,responseBody = getSymbols(resource)
-        elif resource == "SendData":
-             responseHeader,responseBody = SendData(message)
-        elif resource == "getNewStockPrice":
-             responseHeader,responseBody = getNewStockPrice(message)
-        elif resource == "getOldStockPrice":
-             responseHeader,responseBody = getOldStockPrice(message)
-        elif resource == "getStock":
-             responseHeader,responseBody = getStock(message)
-        elif resource == "login":
-             responseHeader,responseBody = login(message)
-        else:
-             responseHeader,responseBody = getFile(resource)
+
+
+        responseHeader, responseBody = login(message)
+
+        if responseHeader == None:
+            if resource == "":
+                responseHeader,responseBody = portfolio("portfolio")
+            elif resource == "stock":
+                responseHeader,responseBody = stock(resource)
+            elif resource == "portfolio":
+                responseHeader,responseBody = portfolio(resource)
+            elif resource == "getSymbols":
+                responseHeader,responseBody = getSymbols(resource)
+            elif resource == "SendData":
+                responseHeader,responseBody = SendData(message)
+            elif resource == "getNewStockPrice":
+                responseHeader,responseBody = getNewStockPrice(message)
+            elif resource == "getOldStockPrice":
+                responseHeader,responseBody = getOldStockPrice(message)
+            elif resource == "getStock":
+                responseHeader,responseBody = getStock(message)
+            elif resource == "login":
+                responseHeader,responseBody = portfolio(resource)
+            else:
+                responseHeader,responseBody = getFile(resource)
+
 
     # Send the HTTP response header line to the connection socket
-    connectionSocket.send(responseHeader)
+        connectionSocket.send(responseHeader)
     # Send the content of the HTTP body (e.g. requested file) to the connection socket
-    connectionSocket.send(responseBody)
+        connectionSocket.send(responseBody)
     # Close the client connection socket
-    connectionSocket.close()
+12
+connectionSocket.close()
 
 
 #Main web server loop. It simply accepts TCP connections, and get the request processed in seperate threads.
