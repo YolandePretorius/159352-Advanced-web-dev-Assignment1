@@ -423,8 +423,7 @@ def process(connectionSocket) :
     # Send the content of the HTTP body (e.g. requested file) to the connection socket
         connectionSocket.send(responseBody)
     # Close the client connection socket
-12
-connectionSocket.close()
+        connectionSocket.close()
 
 
 #Main web server loop. It simply accepts TCP connections, and get the request processed in seperate threads.
