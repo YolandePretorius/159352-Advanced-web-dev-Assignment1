@@ -142,16 +142,16 @@ def findHeader(message,header):
 
 
 def checkUserDetails(authorizationHeader):
-    print(authorizationHeader)
-    username = "123"
-    password = "123"
+
+    username = "18038659"
+    password = "18038659"
 
     usrPass = (username +':'+password).encode("utf-8")
     encodedUserNameLogin = authorizationHeader.split(" ")[-1]
-    print(encodedUserNameLogin)
+   #print(encodedUserNameLogin)
     decodedUserNameLogin = base64.b64decode(encodedUserNameLogin)
 
-    print(decodedUserNameLogin)
+    #print(decodedUserNameLogin)
 
 
     if usrPass == decodedUserNameLogin:
@@ -162,38 +162,31 @@ def checkUserDetails(authorizationHeader):
 
 def login(message):
      splitMessage = message.split("\r\n")
-     print(splitMessage)
+     #print(splitMessage)
      authorization_header = findHeader(splitMessage,'Authorization')
 
 
 
-      #header = "HTTP/1.1 401 Authorization Required\r\nWWW-Authenticate: Basic realm='Private'".encode()
-      #authorization_header = getHeader(message,'Authorization')
-     print(authorization_header)
 
      if authorization_header == None:
-          print("No authorization header")
           header = "HTTP/1.1 401 Authorization Required\r\nWWW-Authenticate: Basic realm='Private'".encode()
-          print("No authorization header")
           return header,"".encode()
 
 
 
      if authorization_header != None and checkUserDetails(authorization_header):
-          print("go")
+
           header = "HTTP/1.1 200 OK\r\n\r\n".encode()
           return None,None
 
      else:
-          print("No authorization header")
           header = "HTTP/1.1 401 Authorization Required\r\nWWW-Authenticate: Basic realm='Private'".encode()
-          print("No authorization header")
           return header,"".encode()
 
 
 SymbolsList =[]
 def getSymbols(resource):
-    #SymbolsList =[]
+
 
     response_buffer = BytesIO()
 
@@ -214,7 +207,7 @@ def getSymbols(resource):
     output_dict = [x for x in dataReceived if x['type'] == 'cs']
 
     for object in output_dict:
-       # print(object["symbol"])
+        print(object["symbol"])
         SymbolsList.append(object["symbol"])
 
 
@@ -313,6 +306,7 @@ def ResetTableWithLatestValues(Getsymbol,quantity,price,getLatestPrice, getOldPr
      if priceFloat < 0:
          return False
 
+
      averagePrice = round((float(price) + float(getLatestPrice))/2,2)
 
      if priceFloat == 0:
@@ -332,7 +326,7 @@ def ResetTableWithLatestValues(Getsymbol,quantity,price,getLatestPrice, getOldPr
      a_file.close()
 
      for i in data:
-         if(Getsymbol in i['symbol']):
+         if(Getsymbol == i['symbol']):
              checkSybolInJSONFIle = True
              i['price'] = averagePrice
              i['gain/loss'] = GainOrLoss

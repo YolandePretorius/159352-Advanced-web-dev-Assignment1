@@ -16,26 +16,6 @@ var symbolList = null;
 
 }*/
 
-/*function dropDownList(){
-               //var obj, dbParam, xmlhttp, myObj, x, txt = "";
-                //obj = { table: "symbol", limit: 20 };
-                //dbParam = JSON.stringify(obj);
-                xmlhttp = new XMLHttpRequest();
-                xmlhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-            myObj = JSON.parse(this.responseText);
-            txt += "<select>"
-            for (x in myObj) {
-              txt += "<option>" + myObj[x].symbol;
-            }
-            txt += "</select>"
-            document.getElementById("demo").innerHTML = txt;
-          }
-        };
-        xmlhttp.open("POST",getSymbols.php, true);
-        xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xmlhttp.send("x=" + dbParam);
-}*/
 
 function dropDownList(){
     var xmlhttp = new XMLHttpRequest();
@@ -52,18 +32,29 @@ function dropDownList(){
     xmlhttp.send();
 }
 
+// Function sets data in user stock data
 function setData(){
 
-
+         var letters = /^[A-Za-z]+$/;
          symbolInput = document.getElementById("symbolInput");
          quantity = document.getElementById("quantity");
          price = document.getElementById("price");
 
 
-         a = symbolInput.value;
-
          b = quantity.value;
+
+         if(symbolInput.value.match(letters)){  //check user input should be a letter
+          a = symbolInput.value; }
+         else{
+         alert("Please input alphabet characters for Stock symbol only")
+         }
+
+
+         if(isNaN(price.value)) // check user input should be a number
+         {alert("Price is invalid")}
+         else{
          c = price.value;
+         }
 
          obj = {symbol:a,quantity:b,price:c};
 
@@ -83,41 +74,14 @@ function setData(){
         xmlhttp.send(dbParam);
 
         }
-
-/*function getLatestPrice(){
-    //Symbol = document.getElementById("symbol").value
-
-    //symbolInput = document.getElementById("symbolInput");
-    symbolInput = document.getElementById("symbolInput");
-    priceInput = document.getElementById("price");
-    symbol = symbolInput.value;
-    a = symbolInput.value;
-
-    b = priceInput.value;
-
-    obj = {symbol:a,price:b}
-    dbParam = JSON.stringify(obj);
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-      ;
-            //myObj = JSON.parse(this.responseText);
-            //document.getElementById("price").value = myObj;
-
-          }
-    };
-    xmlhttp.open("POST", "getNewStockPrice", true);
-    xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xmlhttp.send(dbParam);
-}*/
-
+// get data for fable from server and send to the table function
 function getData(){
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             myObj = JSON.parse(this.responseText);
             tableFromJson(myObj);
-            //document.getElementById("demo").innerHTML = myObj.name;
+
         }
     };
     xmlhttp.open("GET", "portfolio.json", true);

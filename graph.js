@@ -2,49 +2,14 @@
 var myObj = null;
 var symbolList = null;
 
-
-/*function validateInput(){
-
-    const Quantity = document.getElementById("quantity");
-    Quantity.addEventListener("input", function (event) {
-  if (isNaN(Quantity.value)) {
-     Quantity.setCustomValidity("Must be a number");
-  } else {
-    Quantity.setCustomValidity("");
-  }
-});
-
-}*/
-
-/*function dropDownList(){
-               //var obj, dbParam, xmlhttp, myObj, x, txt = "";
-                //obj = { table: "symbol", limit: 20 };
-                //dbParam = JSON.stringify(obj);
-                xmlhttp = new XMLHttpRequest();
-                xmlhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-            myObj = JSON.parse(this.responseText);
-            txt += "<select>"
-            for (x in myObj) {
-              txt += "<option>" + myObj[x].symbol;
-            }
-            txt += "</select>"
-            document.getElementById("demo").innerHTML = txt;
-          }
-        };
-        xmlhttp.open("POST",getSymbols.php, true);
-        xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xmlhttp.send("x=" + dbParam);
-}*/
-
+/*Function used to generate symbol dropdown list*/
 function dropDownList(){
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
             myObj = JSON.parse(this.responseText);
 
-            //tableFromJson(myObj)
-            //document.getElementById("demo").innerHTML = myObj.name;
+
             symbolList = myObj;
             autocomplete(document.getElementById("symbolInput"),symbolList);
           }
@@ -53,130 +18,8 @@ function dropDownList(){
     xmlhttp.send();
 }
 
-/*
-function setData(){
-
-
-         symbolInput = document.getElementById("symbolInput");
-         quantity = document.getElementById("quantity");
-         price = document.getElementById("price");
-
-
-         a = symbolInput.value;
-
-         b = quantity.value;
-         c = price.value;
-
-         obj = {symbol:a,quantity:b,price:c};
-
-         dbParam = JSON.stringify(obj);
-         var xmlhttp = new XMLHttpRequest();
-         xmlhttp.onreadystatechange = function() {
-              if (this.readyState == 4 && this.status == 200){
-                getData();
-              }
-              if(this.readyState == 4 && this.status == 404){
-               alert("Some data provided is invalid")
-               }
-         };
-
-        xmlhttp.open("POST", "SendData", true);
-        xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xmlhttp.send(dbParam);
-
-        }
-*/
-
-/*function getLatestPrice(){
-    //Symbol = document.getElementById("symbol").value
-
-    //symbolInput = document.getElementById("symbolInput");
-    symbolInput = document.getElementById("symbolInput");
-    priceInput = document.getElementById("price");
-    symbol = symbolInput.value;
-    a = symbolInput.value;
-
-    b = priceInput.value;
-
-    obj = {symbol:a,price:b}
-    dbParam = JSON.stringify(obj);
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-      ;
-            //myObj = JSON.parse(this.responseText);
-            //document.getElementById("price").value = myObj;
-
-          }
-    };
-    xmlhttp.open("POST", "getNewStockPrice", true);
-    xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xmlhttp.send(dbParam);
-}*/
-
-/*function getData(){
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            myObj = JSON.parse(this.responseText);
-            tableFromJson(myObj);
-            //document.getElementById("demo").innerHTML = myObj.name;
-        }
-    };
-    xmlhttp.open("GET", "portfolio.json", true);
-    xmlhttp.send();
-
-    dropDownList();
-    //getLatestPrice();
-}*/
-
-// used code from https://www.encodedna.com/javascript/practice-ground/default.htm?pg=convert_json_to_table_javascript
-/*function tableFromJson(stockItems){
-
-        // Extract value from table header.
-        var col = [];
-        for (var i = 0; i < stockItems.length; i++) {
-            for (var key in stockItems[i]) {
-                if (col.indexOf(key) === -1) {
-                    col.push(key);
-                }
-            }
-        }
-
-        // Create a table.
-        var table = document.createElement("table");
-
-        // Create table header row using the extracted headers above.
-        var tr = table.insertRow(-1);                   // table row.
-
-        for (var i = 0; i < col.length; i++) {
-            var th = document.createElement("th");      // table header.
-            th.innerHTML = col[i];
-            tr.appendChild(th);
-        }
-
-        // add json data to the table as rows.
-        for (var i = 0; i < stockItems.length; i++) {
-
-            tr = table.insertRow(-1);
-
-            for (var j = 0; j < col.length; j++) {
-                var tabCell = tr.insertCell(-1);
-                tabCell.innerHTML = stockItems[i][col[j]];
-            }
-        }
-
-        // Now, add the newly created table with json data, to a container.
-        var divShowData = document.getElementById('showData');
-        divShowData.innerHTML = "";
-        divShowData.appendChild(table);
-
- *//*code used from  https://www.w3schools.com/howto/howto_js_autocomplete.asp*//*
-
-
-    }*/
-
 /* code used from https://www.w3schools.com/howto/howto_js_autocomplete.asp*/
+/*Function used to generate symbol dropdown list*/
 function autocomplete(inp, arr) {
     /*the autocomplete function takes two arguments,
     the text field element and an array of possible autocompleted values:*/
@@ -298,6 +141,7 @@ function getGraphData(){
 
 }
 
+/*Function generates graph of stock symbol*/
 function drawGraph(graphDataObject){
 var chart = new CanvasJS.Chart("chartContainer", {
 		title:{
@@ -314,6 +158,7 @@ var chart = new CanvasJS.Chart("chartContainer", {
 	chart.render();
 }
 
+/*Function places data received from server in a list to be used by the draw graph fucnction*/
 function getStockDataArray(graphDataObject)
 {
     var dataPointsList = [];
