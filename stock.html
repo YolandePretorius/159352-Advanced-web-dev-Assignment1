@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,21 +10,6 @@
 
     <title>Stock chart</title>
 
-    <style>
-        th, td, p, input, h3 {
-            font:15px 'Segoe UI';
-        }
-        table, th, td {
-            border: solid 1px #ddd;
-            border-collapse: collapse;
-            padding: 2px 3px;
-            text-align: center;
-        }
-        th {
-            font-weight:bold;
-        }
-
-    </style>
 </head>
 <body onload="dropDownList()">
 
@@ -30,6 +17,7 @@
 
 
 <form>
+    <!--create a drop down list when user starts to type -->
 <section class="enquiries">
 
     <div class="autocomplete" style="width:300px;">
@@ -42,6 +30,8 @@
 
 </section>
 </form>
+
+<!--chart will be displayed here-->
 
 <div id="chartContainer" style="height: 300px; width: 100%;"></div>
 

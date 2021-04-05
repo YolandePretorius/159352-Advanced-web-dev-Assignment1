@@ -3,27 +3,11 @@ var myObj = null;
 var symbolList = null;
 
 
-/*function validateInput(){
-
-    const Quantity = document.getElementById("quantity");
-    Quantity.addEventListener("input", function (event) {
-  if (isNaN(Quantity.value)) {
-     Quantity.setCustomValidity("Must be a number");
-  } else {
-    Quantity.setCustomValidity("");
-  }
-});
-
-}*/
-
-
 function dropDownList(){
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
             myObj = JSON.parse(this.responseText);
-            //tableFromJson(myObj)
-            //document.getElementById("demo").innerHTML = myObj.name;
             symbolList = myObj;
             autocomplete(document.getElementById("symbolInput"),symbolList);
           }

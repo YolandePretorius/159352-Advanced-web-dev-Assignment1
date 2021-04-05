@@ -93,7 +93,7 @@ def default(message):
 
 
 
-
+#Function retrieves stock data to present in graph
 def getStock(message):
     DataObjectList = message.split()[-1]
     dataReceived = json.loads(DataObjectList)
@@ -106,7 +106,7 @@ def getStock(message):
     curl.setopt(curl.SSL_VERIFYPEER, False)
     curl.setopt(curl.URL, 'https://cloud.iexapis.com/stable/stock/' +Newsymbol+ '/chart/ytd?chartCloseOnly=true&token=pk_aff9e28203a3436cb258c9f4ec9f5dbb')
 
-    #https://cloud.iexapis.com/stable/stock/symbol/chart/ytd?chartCloseOnly=true&token=yourAPIToken
+
     curl.setopt(curl.WRITEFUNCTION, response_buffer.write)
 
    # print("here is your response: ")
@@ -115,7 +115,7 @@ def getStock(message):
     curl.close()
 
     GraphdataReceived = json.loads(response_buffer.getvalue().decode('UTF-8'))
-    #print("You receive data")
+
 
     body = json.dumps(GraphdataReceived)
 
@@ -125,13 +125,14 @@ def getStock(message):
     return header, body2
 
 
-
+#Function calls  html page with stock graph to load
 def stock(resource):
     FileName = resource + ".html"
 
     header, body = getFile(FileName)
     return header, body
 
+#function checks if 'Autorization' is present in the header
 def findHeader(message,header):
     for item in message:
         if header in item:
@@ -140,29 +141,25 @@ def findHeader(message,header):
         return None
 
 
-
+#Function confirms if user details are correct if not user cant login
 def checkUserDetails(authorizationHeader):
 
     username = "18038659"
     password = "18038659"
 
-    usrPass = (username +':'+password).encode("utf-8")
+    usrPass = (username +':'+password).encode("utf-8") #cchange login details from a sting to bytes
     encodedUserNameLogin = authorizationHeader.split(" ")[-1]
-   #print(encodedUserNameLogin)
     decodedUserNameLogin = base64.b64decode(encodedUserNameLogin)
 
-    #print(decodedUserNameLogin)
 
-
-    if usrPass == decodedUserNameLogin:
+    if usrPass == decodedUserNameLogin: # check if provided login details bu user matches correct login details
         return True
     else:
         return False
 
-
+#function used to check if user is logged in if not it promps the log in window
 def login(message):
      splitMessage = message.split("\r\n")
-     #print(splitMessage)
      authorization_header = findHeader(splitMessage,'Authorization')
 
 
@@ -175,7 +172,6 @@ def login(message):
 
 
      if authorization_header != None and checkUserDetails(authorization_header):
-
           header = "HTTP/1.1 200 OK\r\n\r\n".encode()
           return None,None
 
@@ -183,7 +179,8 @@ def login(message):
           header = "HTTP/1.1 401 Authorization Required\r\nWWW-Authenticate: Basic realm='Private'".encode()
           return header,"".encode()
 
-
+# Function retrieves stock symbols fom stock website and sort it for cs type then adds the symbols to a list
+# The list of symbols are returned to the web browser through the body
 SymbolsList =[]
 def getSymbols(resource):
 
@@ -207,7 +204,6 @@ def getSymbols(resource):
     output_dict = [x for x in dataReceived if x['type'] == 'cs']
 
     for object in output_dict:
-        print(object["symbol"])
         SymbolsList.append(object["symbol"])
 
 
@@ -219,14 +215,14 @@ def getSymbols(resource):
     header = "HTTP/1.1 200 OK\r\n\r\n".encode()
     return header, body2
 
-
+#Function checks if symbol send through is in the list of symbols
 def validateSymbol(symbol):
     if symbol in SymbolsList:
         return True
     else:
         return False
 
-
+#Function retrieves the required symbols stock price fom stock web site
 priceList =[]
 def getStockPrice(symbol):
 
@@ -249,6 +245,7 @@ def getStockPrice(symbol):
     latestPrice = dataReceived['latestPrice']
     return(latestPrice)
 
+#function retrieves stock price of requested stock symbol stored in JSON file
 def getOldStockPrice(Getsymbol):
 
     with open('portfolio.json') as json_file:
@@ -261,7 +258,7 @@ def getOldStockPrice(Getsymbol):
                # print(i['price'])
                 return(i['price'])
 
-
+#function retrieves quantities of requested stock symbol stored in JSON file
 def getOldQuantity(Getsymbol):
 
     with open('portfolio.json') as json_file:
@@ -276,7 +273,7 @@ def getOldQuantity(Getsymbol):
 
 
 
-
+#Function is used to retrieve the stock symbol to get the stock price from stoc server
 def getNewStockPrice(message):
      DataObjectList = message.split()[-1]
      dataReceived = json.loads(DataObjectList)
@@ -288,13 +285,14 @@ def getNewStockPrice(message):
      return header, body2
 
 
-
+#function used to load portfolio html file
 def portfolio(resource):
 
     FileName = resource + ".html"
     header, body = getFile(FileName)
     return header, body
 
+#function us used to set the values of portfolio table as well as check validitity of values send through to server.
 def ResetTableWithLatestValues(Getsymbol,quantity,price,getLatestPrice, getOldPrice,OldQuantityValue, datareceivedThroughInput):
 
      if OldQuantityValue == None:
@@ -325,26 +323,26 @@ def ResetTableWithLatestValues(Getsymbol,quantity,price,getLatestPrice, getOldPr
      data = json.load(a_file)
      a_file.close()
 
-     for i in data:
+     for i in data:  # if symbol is in the json file update the values
          if(Getsymbol == i['symbol']):
              checkSybolInJSONFIle = True
              i['price'] = averagePrice
              i['gain/loss'] = GainOrLoss
              i['quantity'] = NewQuantity
 
-
+     #if stock symbol is not in the JSON file then add the symbol
      if(checkSybolInJSONFIle == False):
          newData = {'symbol': Getsymbol, 'quantity': quantity, 'price': priceFloat, 'gain/loss': GainOrLoss}
 
          data.append(newData)
 
-
+    # update the JSON file
      with open('portfolio.json', 'w') as f:
         json.dump(data, f)
 
 
 
-
+#function recieves vslues used to update the JSON file and send through an errot if the values send through is not valid
 def SendData(message):
 
     DataObjectList = message.split()[-1]
@@ -353,7 +351,6 @@ def SendData(message):
     quantity = dataReceived["quantity"]
     price = dataReceived["price"]
     validSymbol = validateSymbol(symbol)
-   # if  validSymbol == False:
     getLatestPrice = getStockPrice(symbol)
     getOldPrice = getOldStockPrice(symbol)
     getOldQuantityValue = getOldQuantity(symbol)
@@ -387,7 +384,7 @@ def process(connectionSocket) :
         #map requested resource (contained in the URL) to specific function which generates HTTP response
 
 
-        responseHeader, responseBody = login(message)
+        responseHeader, responseBody = login(message)  # automatically check if user login is valid if not header send back 401 error
 
         if responseHeader == None:
             if resource == "":
