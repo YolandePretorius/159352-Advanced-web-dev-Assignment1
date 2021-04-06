@@ -22,12 +22,13 @@ import json
 from flask import Flask, request, Response
 import base64
 from functools import wraps
+import sys
 
 
 
 serverSocket = socket(AF_INET, SOCK_STREAM)
 
-serverPort = 8080
+serverPort = int(sys.argv[1])
 serverSocket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 serverSocket.bind(("", serverPort))
 
