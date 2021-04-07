@@ -25,7 +25,7 @@ import base64
 
 serverSocket = socket(AF_INET, SOCK_STREAM)
 
-serverPort = 8080
+serverPort = int(sys.argv[1])
 serverSocket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 serverSocket.bind(("", serverPort))
 
