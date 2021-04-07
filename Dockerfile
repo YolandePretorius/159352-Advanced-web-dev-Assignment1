@@ -3,9 +3,9 @@ COPY . /src
 WORKDIR /src
 
 #Uncomment just the next 2  lines to run your application in Docker container
-EXPOSE 8080
-CMD python server3.py 8080
-RUN apk add --no-cache --virtual .build-dependencies build-base curl-dev \
+#EXPOSE 8080
+#CMD python server3.py 8080
+#RUN apk add --no-cache --virtual .build-dependencies build-base curl-dev \
     && pip install pycurl \
     && apk del .build-dependencies
 
