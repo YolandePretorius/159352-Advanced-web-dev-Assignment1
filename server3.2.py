@@ -14,9 +14,8 @@
 #e.g. if server.py and broswer are running on the same machine, then use http://localhost:8080
 import _thread
 from socket import *
-#import pycurl
-import urllib.request
-import urllib.parse
+import pycurl
+import urllib
 from io import BytesIO
 import json
 #from flask import Flask, request, Response
@@ -30,7 +29,7 @@ import sys
 
 serverSocket = socket(AF_INET, SOCK_STREAM)
 
-serverPort = 8080
+serverPort = int(sys.argv[1])
 serverSocket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 serverSocket.bind(("", serverPort))
 
@@ -103,12 +102,21 @@ def getStock(message):
     Newsymbol = dataReceived['symbol']
 
 
-    req = urllib.request.Request('https://cloud.iexapis.com/stable/stock/' +Newsymbol+ '/chart/ytd?chartCloseOnly=true&token=pk_aff9e28203a3436cb258c9f4ec9f5dbb')
-    response = urllib.request.urlopen(req)
-    resp_data = response.read()
+    response_buffer = BytesIO()
+   # print(response_buffer)
+    curl = pycurl.Curl()
+    curl.setopt(curl.SSL_VERIFYPEER, False)
+    curl.setopt(curl.URL, 'https://cloud.iexapis.com/stable/stock/' +Newsymbol+ '/chart/ytd?chartCloseOnly=true&token=pk_aff9e28203a3436cb258c9f4ec9f5dbb')
 
 
-    GraphdataReceived = json.loads(resp_data.decode('utf-8'))
+    curl.setopt(curl.WRITEFUNCTION, response_buffer.write)
+
+   # print("here is your response: ")
+
+    curl.perform()
+    curl.close()
+
+    GraphdataReceived = json.loads(response_buffer.getvalue().decode('UTF-8'))
 
 
     body = json.dumps(GraphdataReceived)
@@ -179,12 +187,20 @@ SymbolsList =[]
 def getSymbols(resource):
 
 
-    req = urllib.request.Request('https://cloud.iexapis.com/stable/ref-data/symbols?token=pk_aff9e28203a3436cb258c9f4ec9f5dbb')
-    response = urllib.request.urlopen(req)
-    resp_data = response.read()
+    response_buffer = BytesIO()
 
-    dataReceived = json.loads(resp_data.decode('utf-8'))
+    curl = pycurl.Curl()
+    curl.setopt(curl.SSL_VERIFYPEER, False)
+    curl.setopt(curl.URL, 'https://cloud.iexapis.com/stable/ref-data/symbols?token=pk_aff9e28203a3436cb258c9f4ec9f5dbb')
 
+    curl.setopt(curl.WRITEFUNCTION, response_buffer.write)
+
+    print("here is your response: ")
+
+    curl.perform()
+    curl.close()
+
+    dataReceived = json.loads(response_buffer.getvalue().decode('UTF-8'))
 
     # Filter python objects with list comprehensions
     output_dict = [x for x in dataReceived if x['type'] == 'cs']
@@ -212,13 +228,20 @@ def validateSymbol(symbol):
 priceList =[]
 def getStockPrice(symbol):
 
+    response_buffer = BytesIO()
+   # print(response_buffer)
+    curl = pycurl.Curl()
+    curl.setopt(curl.SSL_VERIFYPEER, False)
+    curl.setopt(curl.URL, 'https://cloud.iexapis.com/stable/stock/' +symbol+ '/quote?token=pk_aff9e28203a3436cb258c9f4ec9f5dbb')
 
-    req = urllib.request.Request('https://cloud.iexapis.com/stable/stock/' +symbol+ '/quote?token=pk_aff9e28203a3436cb258c9f4ec9f5dbb')
-    response = urllib.request.urlopen(req)
-    resp_data = response.read()
+    curl.setopt(curl.WRITEFUNCTION, response_buffer.write)
 
-    dataReceived = json.loads(resp_data.decode('utf-8'))
+   # print("here is your response: ")
 
+    curl.perform()
+    curl.close()
+
+    dataReceived = json.loads(response_buffer.getvalue().decode('UTF-8'))
    # print(dataReceived)
 
     latestPrice = dataReceived['latestPrice']
