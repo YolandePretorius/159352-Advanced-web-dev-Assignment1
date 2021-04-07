@@ -17,14 +17,9 @@ from socket import *
 #import pycurl
 import urllib.request
 import urllib.parse
-from io import BytesIO
+#from io import BytesIO
 import json
-#from flask import Flask, request, Response
-
-from flask import Flask, request, Response
 import base64
-from functools import wraps
-import sys
 
 
 
