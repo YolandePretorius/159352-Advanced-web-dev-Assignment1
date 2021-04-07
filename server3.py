@@ -27,6 +27,8 @@ import sys
 serverSocket = socket(AF_INET, SOCK_STREAM)
 
 serverPort = int(sys.argv[1])
+#serverPort = 8081
+#serverPort = 8080
 serverSocket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 serverSocket.bind(("", serverPort))
 
@@ -156,7 +158,7 @@ def login(message):
 
 
      if authorization_header == None:
-          header = "HTTP/1.1 401 Authorization Required\r\nWWW-Authenticate: Basic realm='Private'".encode()
+          header = "HTTP/1.1 401 Authorization Required\r\nWWW-Authenticate: Basic realm='Private'\r\n\r\n".encode()
           return header,"".encode()
 
 
@@ -166,7 +168,7 @@ def login(message):
           return None,None
 
      else:
-          header = "HTTP/1.1 401 Authorization Required\r\nWWW-Authenticate: Basic realm='Private'".encode()
+          header = "HTTP/1.1 401 Authorization Required\r\nWWW-Authenticate: Basic realm='Private'\r\n\r\n".encode()
           return header,"".encode()
 
 # Function retrieves stock symbols fom stock website and sort it for cs type then adds the symbols to a list
@@ -179,8 +181,9 @@ def getSymbols(resource):
     response = urllib.request.urlopen(req)
     resp_data = response.read()
 
+    #dataReceived = json.loads(resp_data.getvalue().decode('utf-8'))
+    #dataReceived = json.loads(resp_data.getvalue().decode('UTF-8'))
     dataReceived = json.loads(resp_data.decode('utf-8'))
-
 
     # Filter python objects with list comprehensions
     output_dict = [x for x in dataReceived if x['type'] == 'cs']
