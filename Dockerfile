@@ -11,4 +11,4 @@ RUN apk add --no-cache --virtual .build-dependencies build-base curl-dev \
 
 
 #Uncomment just the next line when you want to deploy your container on Heroku
-#CMD python server3.py $PORT
+CMD python server3.py $PORT
