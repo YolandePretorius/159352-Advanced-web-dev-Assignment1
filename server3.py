@@ -20,14 +20,14 @@ import urllib.parse
 #from io import BytesIO
 import json
 import base64
-#import sys
+import sys
 
 
 APIToken = 'pk_d63bea6a9a7049df8c63f7599bb80cd2'
 serverSocket = socket(AF_INET, SOCK_STREAM)
 
-serverPort = int(sys.argv[1])
-#serverPort = 8080
+#serverPort = int(sys.argv[1])
+serverPort = 9090
 serverSocket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 serverSocket.bind(("", serverPort))
 
@@ -312,24 +312,29 @@ def ResetTableWithLatestValues(Getsymbol,quantity,price,getLatestPrice, getOldPr
 
 #function recieves vslues used to update the JSON file and send through an errot if the values send through is not valid
 def SendData(message):
-
-    DataObjectList = message.split()[-1]
-    dataReceived = json.loads(DataObjectList)
-    symbol = dataReceived["symbol"]
-    quantity = dataReceived["quantity"]
-    price = dataReceived["price"]
-    validSymbol = validateSymbol(symbol)
-    getLatestPrice = getStockPrice(symbol)
-    getOldPrice = getOldStockPrice(symbol)
-    getOldQuantityValue = getOldQuantity(symbol)
-    ResetTable = ResetTableWithLatestValues(symbol,quantity,price,getLatestPrice, getOldPrice,getOldQuantityValue,dataReceived)
-    if ResetTable == False:
-         header = "HTTP/1.1 404 Not Found\r\n\r\n".encode()
-         body = "<html><head></head><body><h1>404 Not Found</h1></body></html>\r\n".encode()
-    else:
-         header = "HTTP/1.1 200 OK\r\n\r\n".encode()
-         body = welcome(message)
-    return header,body
+    try:
+        DataObjectList = message.split()[-1]
+        dataReceived = json.loads(DataObjectList)
+        symbol = dataReceived["symbol"]
+        quantity = dataReceived["quantity"]
+        price = dataReceived["price"]
+        validSymbol = validateSymbol(symbol)
+        getLatestPrice = getStockPrice(symbol)
+        getOldPrice = getOldStockPrice(symbol)
+        getOldQuantityValue = getOldQuantity(symbol)
+        ResetTable = ResetTableWithLatestValues(symbol,quantity,price,getLatestPrice, getOldPrice,getOldQuantityValue,dataReceived)
+        if ResetTable == False:
+             header = "HTTP/1.1 404 Not Found\r\n\r\n".encode()
+             body = "<html><head></head><body><h1>404 Not Found</h1></body></html>\r\n".encode()
+        else:
+             header = "HTTP/1.1 200 OK\r\n\r\n".encode()
+             body = welcome(message)
+        return header,body
+    except:
+        e = sys.exc_info()[0]
+        header = "HTTP/1.1 500 Internal Server Error\r\n\r\n".encode()
+        body = "<p>Error: "+e+"</p>"
+        return header,body
 
 
 #We process client request here. The requested resource in the URL is mapped to a service function which generates the HTTP reponse
