@@ -26,8 +26,7 @@ import base64
 APIToken = 'pk_d63bea6a9a7049df8c63f7599bb80cd2'
 serverSocket = socket(AF_INET, SOCK_STREAM)
 
-#serverPort = int(sys.argv[1])
-serverPort = 8082
+serverPort = int(sys.argv[1])
 #serverPort = 8080
 serverSocket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 serverSocket.bind(("", serverPort))
