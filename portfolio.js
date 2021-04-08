@@ -7,7 +7,7 @@ function dropDownList(){
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
-            myObj = JSON.parse(this.responseText);
+            myObj = JSON.parse(this.response);
             symbolList = myObj;
             autocomplete(document.getElementById("symbolInput"),symbolList);
           }

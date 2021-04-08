@@ -106,7 +106,7 @@ def getStock(message):
    # print(response_buffer)
     curl = pycurl.Curl()
     curl.setopt(curl.SSL_VERIFYPEER, False)
-    curl.setopt(curl.URL, 'https://cloud.iexapis.com/stable/stock/' +Newsymbol+ '/chart/ytd?chartCloseOnly=true&token=pk_aff9e28203a3436cb258c9f4ec9f5dbb')
+    curl.setopt(curl.URL, 'https://cloud.iexapis.com/stable/stock/' +Newsymbol+ '/chart/ytd?chartCloseOnly=true&token=pk_d63bea6a9a7049df8c63f7599bb80cd2')
 
 
     curl.setopt(curl.WRITEFUNCTION, response_buffer.write)
@@ -191,7 +191,7 @@ def getSymbols(resource):
 
     curl = pycurl.Curl()
     curl.setopt(curl.SSL_VERIFYPEER, False)
-    curl.setopt(curl.URL, 'https://cloud.iexapis.com/stable/ref-data/symbols?token=pk_aff9e28203a3436cb258c9f4ec9f5dbb')
+    curl.setopt(curl.URL, 'https://cloud.iexapis.com/stable/ref-data/symbols?token=pk_d63bea6a9a7049df8c63f7599bb80cd2')
 
     curl.setopt(curl.WRITEFUNCTION, response_buffer.write)
 
@@ -232,7 +232,7 @@ def getStockPrice(symbol):
    # print(response_buffer)
     curl = pycurl.Curl()
     curl.setopt(curl.SSL_VERIFYPEER, False)
-    curl.setopt(curl.URL, 'https://cloud.iexapis.com/stable/stock/' +symbol+ '/quote?token=pk_aff9e28203a3436cb258c9f4ec9f5dbb')
+    curl.setopt(curl.URL, 'https://cloud.iexapis.com/stable/stock/' +symbol+ '/quote?token=pk_d63bea6a9a7049df8c63f7599bb80cd2')
 
     curl.setopt(curl.WRITEFUNCTION, response_buffer.write)
 

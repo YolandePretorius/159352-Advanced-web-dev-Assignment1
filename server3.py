@@ -20,22 +20,19 @@ import urllib.parse
 #from io import BytesIO
 import json
 import base64
-import sys
+#import sys
 
 
-
+APIToken = 'pk_d63bea6a9a7049df8c63f7599bb80cd2'
 serverSocket = socket(AF_INET, SOCK_STREAM)
 
-serverPort = int(sys.argv[1])
-#serverPort = 8081
+#serverPort = int(sys.argv[1])
+serverPort = 8082
 #serverPort = 8080
 serverSocket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 serverSocket.bind(("", serverPort))
 
 serverSocket.listen(5)
-
-
-
 
 print('The server is running')
 #loginVariable = False
@@ -92,8 +89,6 @@ def default(message):
     header, body = welcome(message)
     return header, body
 
-
-
 #Function retrieves stock data to present in graph
 def getStock(message):
     DataObjectList = message.split()[-1]
@@ -101,7 +96,8 @@ def getStock(message):
     Newsymbol = dataReceived['symbol']
 
 
-    req = urllib.request.Request('https://cloud.iexapis.com/stable/stock/' +Newsymbol+ '/chart/ytd?chartCloseOnly=true&token=pk_aff9e28203a3436cb258c9f4ec9f5dbb')
+    #req = urllib.request.Request('https://cloud.iexapis.com/stable/stock/' +Newsymbol+ '/chart/ytd?chartCloseOnly=true&token=pk_d63bea6a9a7049df8c63f7599bb80cd2')
+    req = urllib.request.Request('https://cloud.iexapis.com/stable/stock/' +Newsymbol+ '/chart/ytd?chartCloseOnly=true&token='+APIToken)
     response = urllib.request.urlopen(req)
     resp_data = response.read()
 
@@ -115,7 +111,6 @@ def getStock(message):
     body2 = body.encode()
     header = "HTTP/1.1 200 OK\r\n\r\n".encode()
     return header, body2
-
 
 #Function calls  html page with stock graph to load
 def stock(resource):
@@ -173,24 +168,25 @@ def login(message):
 
 # Function retrieves stock symbols fom stock website and sort it for cs type then adds the symbols to a list
 # The list of symbols are returned to the web browser through the body
-SymbolsList =[]
+SymbolsList = []
+
 def getSymbols(resource):
 
+    if len(SymbolsList) == 0:
+        req = urllib.request.Request('https://cloud.iexapis.com/stable/ref-data/symbols?token='+APIToken)
+        #req = urllib.request.Request('https://cloud.iexapis.com/stable/ref-data/symbols?token=pk_d63bea6a9a7049df8c63f7599bb80cd2')
+        response = urllib.request.urlopen(req)
+        resp_data = response.read()
 
-    req = urllib.request.Request('https://cloud.iexapis.com/stable/ref-data/symbols?token=pk_aff9e28203a3436cb258c9f4ec9f5dbb')
-    response = urllib.request.urlopen(req)
-    resp_data = response.read()
+        #dataReceived = json.loads(resp_data.getvalue().decode('utf-8'))
+        #dataReceived = json.loads(resp_data.getvalue().decode('UTF-8'))
+        dataReceived = json.loads(resp_data.decode('utf-8'))
 
-    #dataReceived = json.loads(resp_data.getvalue().decode('utf-8'))
-    #dataReceived = json.loads(resp_data.getvalue().decode('UTF-8'))
-    dataReceived = json.loads(resp_data.decode('utf-8'))
+        # Filter python objects with list comprehensions
+        output_dict = [x for x in dataReceived if x['type'] == 'cs']
 
-    # Filter python objects with list comprehensions
-    output_dict = [x for x in dataReceived if x['type'] == 'cs']
-
-    for object in output_dict:
-        SymbolsList.append(object["symbol"])
-
+        for object in output_dict:
+            SymbolsList.append(object["symbol"])
 
     # Transform python object back into json
     body = json.dumps(SymbolsList)
@@ -211,14 +207,14 @@ def validateSymbol(symbol):
 priceList =[]
 def getStockPrice(symbol):
 
-
-    req = urllib.request.Request('https://cloud.iexapis.com/stable/stock/' +symbol+ '/quote?token=pk_aff9e28203a3436cb258c9f4ec9f5dbb')
+    req = urllib.request.Request('https://cloud.iexapis.com/stable/stock/' +symbol+ '/quote?token='+APIToken)
+    #req = urllib.request.Request('https://cloud.iexapis.com/stable/stock/' +symbol+ '/quote?token=pk_d63bea6a9a7049df8c63f7599bb80cd2')
     response = urllib.request.urlopen(req)
     resp_data = response.read()
 
     dataReceived = json.loads(resp_data.decode('utf-8'))
 
-   # print(dataReceived)
+    print(dataReceived)
 
     latestPrice = dataReceived['latestPrice']
     return(latestPrice)
@@ -249,8 +245,6 @@ def getOldQuantity(Getsymbol):
               #  print(i['quantity'])
                 return(i['quantity'])
 
-
-
 #Function is used to retrieve the stock symbol to get the stock price from stoc server
 def getNewStockPrice(message):
      DataObjectList = message.split()[-1]
@@ -261,7 +255,6 @@ def getNewStockPrice(message):
      body2 = body.encode()
      header = "HTTP/1.1 200 OK\r\n\r\n".encode()
      return header, body2
-
 
 #function used to load portfolio html file
 def portfolio(resource):
@@ -317,8 +310,6 @@ def ResetTableWithLatestValues(Getsymbol,quantity,price,getLatestPrice, getOldPr
     # update the JSON file
      with open('portfolio.json', 'w') as f:
         json.dump(data, f)
-
-
 
 #function recieves vslues used to update the JSON file and send through an errot if the values send through is not valid
 def SendData(message):
